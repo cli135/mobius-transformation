@@ -279,8 +279,8 @@ if __name__ == "__main__":
     for s in [sample_plane, sample_sphere, sample_all]:
         img = getImage(s, cameraoffset=1, view_direction=[1, -2, 1], alpha=rad(45), beta=rad(-30), p_offset=[0, 1, 3],
                        image_w=200, viewsize=4, grid_size=2)
-        # plt.imshow(img, cmap='gray')
-        # plt.show()
+        plt.imshow(img, cmap='gray')
+        plt.show()
 
         # print(type(img))
         # print(img.size)
