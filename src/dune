@@ -8,7 +8,7 @@
 
 (library
   (name rasterizer)
-  ; (modules rasterizer)
+  (modules rasterizer)
   (libraries
     math
     core
@@ -23,7 +23,7 @@
 
 (library
   (name math)
-  ; (modules math)
+  (modules math)
   (libraries
     core
     stdio
@@ -37,7 +37,7 @@
 
 (library
   (name ascii_printer)
-  ; (modules ascii_printer)
+  (modules ascii_printer)
   (libraries
     core
     stdio
@@ -51,7 +51,7 @@
 
 (library
   (name user_interface)
-  ; (modules user_interface)
+  (modules user_interface)
   (libraries
     core
     stdio
