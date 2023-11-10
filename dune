@@ -1,10 +1,13 @@
 (rule
-  (target assignment1.zip)
+  (target mobius_transformation.zip)
   (deps 
-    src/submission.ml
+    src/rasterizer.ml
+    src/math.ml
+    src/ascii_printer.ml
+    src/user_interface.ml
     src/dune
     tests/tests.ml
     tests/dune
   )
   (action
-    (run zip -R assignment1.zip %{deps})))
+    (run zip -R mobius_transformation.zip %{deps})))

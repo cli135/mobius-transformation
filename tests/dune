@@ -13,7 +13,6 @@
     math
     ascii_printer
     user_interface
-    mobius
     core
     ounit2
   ))

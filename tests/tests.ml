@@ -1,6 +1,7 @@
 (*
-  Put the tests for lib.ml functions here
+  We will put the tests for functions here
 *)
 
-open Core;;
-open OUnit2;;
+(* Will comment back in soon *)
+(* open Core;;
+open OUnit2;; *)
