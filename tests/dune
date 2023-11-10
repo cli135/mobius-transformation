@@ -1,0 +1,25 @@
+; FPSE Final Project
+; 601.429 Functional Programming in Software Engineering
+; Fall 2023
+; Professor Smith
+; Group Advisor: Brandon Stride
+; Group: Hongyi Liu, Christopher Li
+; Date: 11-09-2023 (November 9, 2023)
+
+(test
+  (name tests)
+  (libraries
+    rasterizer
+    math
+    ascii_printer
+    user_interface
+    mobius
+    core
+    ounit2
+  ))
+
+; dune rule so command line "dune runtest" (and "dune test") will run tests.
+; (rule
+;  (alias runtest)
+;  (action (chdir %{project_root}
+;   (run ./test/tests.exe))))

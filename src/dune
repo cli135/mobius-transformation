@@ -1,0 +1,81 @@
+; FPSE Final Project
+; 601.429 Functional Programming in Software Engineering
+; Fall 2023
+; Professor Smith
+; Group Advisor: Brandon Stride
+; Group: Hongyi Liu, Christopher Li
+; Date: 11-09-2023 (November 9, 2023)
+
+(library
+  (name rasterizer)
+  ; (modules rasterizer)
+  (libraries
+    math
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+  )
+  (preprocess
+    (pps bisect_ppx ppx_jane)
+  )
+)
+
+(library
+  (name math)
+  ; (modules math)
+  (libraries
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+  )
+  (preprocess
+    (pps bisect_ppx ppx_jane)
+  )
+)
+
+(library
+  (name ascii_printer)
+  ; (modules ascii_printer)
+  (libraries
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+  )
+  (preprocess
+    (pps bisect_ppx ppx_jane)
+  )
+)
+
+(library
+  (name user_interface)
+  ; (modules user_interface)
+  (libraries
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+  )
+  (preprocess
+    (pps bisect_ppx ppx_jane)
+  )
+)
+
+(executable
+  (name mobius)
+  (modules mobius)
+  (libraries
+    rasterizer
+    math
+    ascii_printer
+    user_interface
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+    core_unix.command_unix)
+  (preprocess (pps bisect_ppx ppx_jane)
+  )
+)
