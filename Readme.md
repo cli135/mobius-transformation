@@ -8,11 +8,11 @@ Christopher Li
 
 Dependencies/Libraries used:
 
-`Core`
-`Lwt`
-`OUnit2`
-`Bimage`
-- `opam install bimage`
-`Bimage_io`
-- `opam install bimage-io`
+- `Core`
+- `Lwt`
+- `OUnit2`
+- `Bimage`
+  - `opam install bimage`
+- `Bimage_io`
+  - `opam install bimage-io`
   - This is currently throwing an error, I will debug this soon -Chris, 11-10-2023
