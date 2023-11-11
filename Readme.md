@@ -1,4 +1,5 @@
 Final Project - FPSE
+Moebius Transformation in ASCII Art
 --------------------------------
 
 
@@ -14,3 +15,4 @@ Dependencies/Libraries used:
 - `opam install bimage`
 `Bimage_io`
 - `opam install bimage-io`
+  - This is currently throwing an error, I will debug this soon -Chris, 11-10-2023

@@ -64,8 +64,8 @@
 )
 
 (executable
-  (name mobius)
-  (modules mobius)
+  (name moebius)
+  (modules moebius)
   (libraries
     rasterizer
     math

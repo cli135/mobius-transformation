@@ -1,5 +1,5 @@
 (rule
-  (target mobius_transformation.zip)
+  (target moebius_transformation.zip)
   (deps 
     src/rasterizer.ml
     src/math.ml
@@ -10,4 +10,4 @@
     tests/dune
   )
   (action
-    (run zip -R mobius_transformation.zip %{deps})))
+    (run zip -R moebius_transformation.zip %{deps})))
