@@ -1,5 +1,12 @@
 (*
 
+The purpose of this file is to allow the user to edit parameters while the program is running.
+For example, the user can change alpha and beta parameters of the Moebius transformation,
+which will render an image that is updated accordingly.
+
+*)
+(*
+
 open Core
 open Bimage
 
