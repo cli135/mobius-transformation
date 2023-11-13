@@ -63,19 +63,20 @@
   )
 )
 
-(executable
-  (name moebius)
-  (modules moebius)
-  (libraries
-    rasterizer
-    math
-    ascii_printer
-    user_interface
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-    core_unix.command_unix)
-  (preprocess (pps bisect_ppx ppx_jane)
-  )
-)
+
+; (executable
+;   (name moebius)
+;   (modules moebius)
+;   (libraries
+;     rasterizer
+;     math
+;     ascii_printer
+;     user_interface
+;     core
+;     stdio
+;     core_unix
+;     core_unix.sys_unix
+;     core_unix.command_unix)
+;   (preprocess (pps bisect_ppx ppx_jane)
+;   )
+; )
