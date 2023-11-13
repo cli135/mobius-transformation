@@ -12,7 +12,10 @@ open Bimage
 if the size is not changing and we are making mutations common *)
 module List_grid :
    sig
+      (* val width : int
+      val height : int *)
       type 'a t = 'a list list
+      val make_list_grid : int -> int -> 'a t
    end
 
 (* This represents a single RGB value of floats,
