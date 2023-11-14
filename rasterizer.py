@@ -128,10 +128,10 @@ def getLines(grid_size=2, half_edge_length=1):
     return line_list
 
 
-# -------> increase of j
-# |   (0,0)  (0,1)
-# |   (1,0)  (1,1)
-# |/ increase of i
+#  -------> increase of j
+#  |   (0,0)  (0,1)
+#  |   (1,0)  (1,1)
+# \|/ increase of i
 
 def getImage(sample_method, cameraoffset=1, view_direction=[1, -1, 1], alpha=0, beta=0, p_offset=[0, 0, 1], image_w=200,
              viewsize=8, plane_bd=4, half_edge_length=1, width=0.1, grid_size=2):

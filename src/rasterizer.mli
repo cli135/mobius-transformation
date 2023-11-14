@@ -9,9 +9,8 @@ open Core
 open Math 
 open Ascii_printer
 
-val getImage : (mode:int -> camera_offset:int -> view_direction:Vec3 -> ?(img_w=200):int ->
-    alpha:float -> beta:float -> center:Vec3 -> viewsize:int -> bd:int 
-    -> half_edge:int -> line_w:float -> grid_size:int -> RGB.t Grid.t)
+val getImage : (mode:int -> alpha:float -> beta:float -> center:Vec3 -> ?camera_offset:int -> ?view_direction:Vec3 -> ?img_w:int ->
+     -> ?viewsize:int -> ?bd:int -> ?half_edge:int -> ?line_w:float -> ?grid_size:int -> RGB.t Grid.t)
 
 *)
 
