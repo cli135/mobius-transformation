@@ -66,7 +66,7 @@ let invSProj v2 ~z_c =
   else failwith "stereoProj: zc should not be a negative value" 
 
 
-(* this part construct the R^2 -> R^2  function such that given (X,Y), we should sample from (X',Y') which is the location given by inverse Moebius transformation *)
+(* this part construct the mapping functions for sampling *)
 (* step 1. invSProj (X,Y) -> global (x1, y1, z1) on S2 centered at (0,0,z_c) -> local (x1_, y1_, z1_) on S2 *) 
 let map2localS2 center v2 = 
   let x_c = Vec3.nth center 0 and y_c = Vec3.nth center 1 and z_c = Vec3.nth center 2 in
@@ -91,6 +91,11 @@ let r_beta beta v3 =
 
 (* step 3. sProj (x,y,z) -> (X', Y') which is the location on z-plane to sample from *)
 (* wrapping all steps up*)
-let mapMoebius v2 ~alpha ~beta ~center = 
-  v2 |> map2localS2 center |> r_alpha alpha |> r_beta beta |> Vec3.(+) (Vec3.of_list [0.;0.;1.]) |> sProj ~z_c:1.
 
+let mapSphereSample v3  ~alpha ~beta = 
+  v3 |> r_alpha alpha |> r_beta beta |> Vec3.(+) (Vec3.of_list [0.;0.;1.]) |> sProj ~z_c:1.
+
+let mapMoebius v2 ~alpha ~beta ~center = 
+  v2 |> map2localS2 center |> mapSphereSample ~alpha ~beta
+
+let 

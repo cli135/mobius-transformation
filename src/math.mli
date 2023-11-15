@@ -43,6 +43,8 @@ val sProj: Vec3.t -> z_c:float -> Vec2.t
 (* inverse transform of previous function *)
 val invSProj: Vec2.t -> z_c:float -> Vec3.t
 
+(* this is a S2->R^2 function so given a point on sphere(locally) we know where to sample from *)
+val mapSphereSample: Vec3.t -> alpha:float -> beta:float -> Vec2.t
+
 (* this is a R^2 -> R^2 function such that given (X,Y), we should sample from (X',Y') which is the location given by inverse Moebius transformation *)
 val mapMoebius: Vec2.t -> alpha:float -> beta:float -> center:Vec3.t -> Vec2.t
-
