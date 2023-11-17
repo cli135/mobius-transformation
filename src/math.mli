@@ -21,6 +21,7 @@ sig
   val length : t -> float
   val unit : t -> t
   val dot : t -> t -> float
+  val print : t -> unit
 end
 
 module MakeNVec (_ : sig
@@ -35,6 +36,7 @@ module Vec3 : Vec
 val rad : float -> float (* degree to radian *)
 val gt : float -> float -> bool
 val cross : Vec3.t -> Vec3.t -> Vec3.t
+val vec3ofvec2 : Vec3.t -> Vec2.t
 
 (* geometric maps *)
 

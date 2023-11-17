@@ -79,14 +79,16 @@ let random_indices = [(19,  0);
 
 let direction = Vec3.of_list [-0.57735027;  0.57735027; -0.57735027], Vec3.of_list [0.70710678; 0.70710678; -0.], Vec3.of_list [-0.40824829; 0.40824829; 0.81649658] 
 
+(* these values are generated from python for testing *)
 let rasterizer_tests_ _ = 
   assert_equal [0; 0; 0; 0; 1; 0; 0; 0; 1; 0] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 4 0.1 2);
   assert_equal [1; 0; 0; 0; 1; 0; 0; 0; 1; 1] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 4 0.2 2); 
   assert_equal [1; 0; 0; 1; 1; 0; 1; 1; 1; 1] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 7 0.2 2);
   assert_equal [0; 1; 0; 1; 0; 1; 1; 1; 1; 0] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 7 0.1 3);
-  assert_equal [1; 0; 0; 0; 0; 1; 1; 0; 0; 1] @@ List.map random_indices ~f:(fun (i,j)-> sample_plane i j 2 (rad 45.) (rad @@ -.30.) (Vec3.of_list [0.;1.;3.;]) 50 4 2 0.3);
-  assert_equal [0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2] @@ List.map random_indices ~f:(fun (i,j)->sample_sphere i j 8 direction (rad 30.) (rad 35.) 50 4 0.1)
-
+  assert_equal [1.; 0.; 0.; 0.; 0.; 1.; 1.; 0.; 0.; 1.] @@ List.map random_indices ~f:(fun (i,j)-> sample_plane i j 2 (rad 45.) (rad @@ -.30.) (Vec3.of_list [0.;1.;3.;]) 50 4 2 0.3);
+  assert_equal [0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2] @@ List.map random_indices ~f:(fun (i,j)->sample_sphere i j 8 direction (rad 30.) (rad 35.) 50 4 0.1);
+  assert_equal [0.; 1.; 0.4; 0.4; 0.; 0.; 0.; 1.; 0.4; 0.4] @@ List.map random_indices ~f:(fun (i,j)->sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.;0.;1.;]) 50 4 2 4 0.1);
+  assert_equal [0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2] @@ List.map random_indices ~f:(fun (i,j)->sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.2;0.5;1.;]) 50 2 1 2 0.1)
 let rasterizer_tests = "Rasterizer tests" >: test_list [
     "basic rasterizer test" >:: rasterizer_tests_
   ]
@@ -96,4 +98,14 @@ let series = "Project Tests" >::: [ math_tests; rasterizer_tests ]
 
 let () = run_test_tt_main series
 
-(* Vec2.to_list (mapMoebius (Vec2.of_list [233.; -0.7]) ~alpha:0.1 ~beta:0.2 ~center:(Vec3.of_list [0.;0.;1.]));;*)
+(* 
+
+open Core
+open Rasterizer
+open Math;;
+
+let direction = Vec3.of_list [-0.57735027;  0.57735027; -0.57735027], Vec3.of_list [0.70710678; 0.70710678; -0.], Vec3.of_list [-0.40824829; 0.40824829; 0.81649658] ;;
+
+sample_orthogonal 27 43 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.;0.;1.;]) 50 4 2 4 0.1;;
+
+*)

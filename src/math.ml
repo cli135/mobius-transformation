@@ -17,6 +17,7 @@ sig
   val length : t -> float
   val unit : t -> t
   val dot : t -> t -> float
+  val print : t -> unit
 end
 
 module MakeNVec (X : sig
@@ -39,9 +40,12 @@ end) : Vec = struct
   let sqr_length v = Array.fold v ~init:0. ~f:(fun acc x -> acc +. (x *. x))
   let length v = Float.sqrt @@ sqr_length v
   let unit (v : t) : t = 1. /. length v * v
-
   let dot (v1 : t) (v2 : t) : float =
     Array.fold2_exn v1 v2 ~init:0. ~f:(fun acc x y -> acc +. (x *. y))
+  let print (v1:t) = 
+    print_string "[" ;
+    Array.map v1 ~f:(fun x-> print_string @@ string_of_float x; print_string ";") |> ignore;
+    print_endline "]" ;
 end
 
 module Vec2 : Vec = MakeNVec (struct
@@ -63,6 +67,8 @@ let cross v1 v2 =
       (Vec3.nth v1 2 *. Vec3.nth v2 0) -. (Vec3.nth v1 0 *. Vec3.nth v2 2);
       (Vec3.nth v1 0 *. Vec3.nth v2 1) -. (Vec3.nth v1 1 *. Vec3.nth v2 0);
     ]
+
+let vec3ofvec2 v3 = Vec2.of_list [Vec3.nth v3 0; Vec3.nth v3 1]
 
 (* compute the projection between x^2+y^2+(z-z_c)^2=1 sphere to the z=0 plane, requires z_c > 0
    input and output are all global coordinates
