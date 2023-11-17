@@ -96,16 +96,16 @@ val sample_orthogonal :
 type render_mode = Planar | Sphere | Orthogonal
 
 val getImage :
-  ?camera_offset:float ->
-  ?view_direction:Vec3.t ->
-  ?img_w:int ->
-  ?view_size:int ->
-  ?bd:int ->
-  ?half_edge:int ->
-  ?line_w:float ->
-  ?grid_size:int ->
+  ?camera_offset:float -> (* camera height, only applies in orthogonal view*)
+  ?view_direction:Vec3.t -> (* camera forward direction *)
+  ?img_w:int -> (* image width *)
+  ?view_size:int -> (* the planar view size, e.g., in planar view we sees the [-view_size, view_size] x [-view_size, view_size] area *)
+  ?bd:int -> (* the orthogonal view boudnary. This is to prevent the planer image occupies the whole orthogonal view *)
+  ?half_edge:int -> (* the length of grid. The grid sit in the [-half_edge, half_edge] x [-half_edge, half_edge] area *)
+  ?line_w:float -> (* width of grid lines *)
+  ?grid_size:int -> (* number of lines. We will have grid_size grids and grid_size+1 vertical/horizontal corresponding lines *)
   render_mode -> (* to get rid of warning 16 [unerasable-optional-argument] *)
-  alpha:float -> (* both alpha/beta are in degree*)
-  beta:float ->
-  center:Vec3.t ->
+  alpha:float -> (* rotation along z axis in degree*)
+  beta:float -> (* rotation along y axis in degree *)
+  center:Vec3.t -> (* center of the sphere *)
   float list

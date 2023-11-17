@@ -123,13 +123,6 @@ let plane_result =
     0.; 0.; 0.; 0.; 0.;
   ]
 
-(* let different_pixels_n l1 l2 = List.fold2_exn l1 l2 ~init:0 ~f:(fun acc a b-> if Float.(=) a b then acc else acc+1) *)
-
-let different_pixels_less_than_n n l1 l2 =
-  List.fold2_exn l1 l2 ~init:0 ~f:(fun acc a b ->
-      if Float.( = ) a b then acc else acc + 1)
-  < n
-
 let sphere_result =
   [
     0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2; 0.2; 0.2;
@@ -150,6 +143,11 @@ let orthogonal_result =
     0.4; 1.; 0.4; 0.4; 0.4; 0.4; 0.4; 1.; 0.4; 0.4; 0.4; 0.4; 0.; 0.; 0.4; 0.4;
     0.4; 1.; 0.4; 1.; 0.4; 0.; 0.; 0.; 0.; 0.; 0.4; 0.4; 0.4; 0.; 0.; 0.;
   ]
+
+let different_pixels_less_than_n n l1 l2 =
+  List.fold2_exn l1 l2 ~init:0 ~f:(fun acc a b ->
+      if Float.( = ) a b then acc else acc + 1)
+  < n
 
 let image_tests _ =
   assert_equal true
