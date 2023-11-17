@@ -99,7 +99,7 @@ val getImage :
   ?camera_offset:float ->
   ?view_direction:Vec3.t ->
   ?img_w:int ->
-  ?viewsize:int ->
+  ?view_size:int ->
   ?bd:int ->
   ?half_edge:int ->
   ?line_w:float ->

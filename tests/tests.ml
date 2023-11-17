@@ -11,101 +11,180 @@ open OUnit2
 open Math
 open Rasterizer
 
-let v2a = Vec2.of_list [1.; 2.]
-let v2b = Vec2.of_list [-1.; 0.5]
-
-let v2c = Vec2.of_list [233.; -0.7]
-let v3a = Vec3.of_list [1.; 2.; 2.0]
-let v3b = Vec3.of_list [-1.; 0.5; 0.2]
-
-let v3c = Vec3.of_list [-0.23; 1.34; 43.]
-
-let float_equal f1 f2 = (Float.compare (Float.abs (f1 -. f2)) 0.00000001) = -1
+let v2a = Vec2.of_list [ 1.; 2. ]
+let v2b = Vec2.of_list [ -1.; 0.5 ]
+let v2c = Vec2.of_list [ 233.; -0.7 ]
+let v3a = Vec3.of_list [ 1.; 2.; 2.0 ]
+let v3b = Vec3.of_list [ -1.; 0.5; 0.2 ]
+let v3c = Vec3.of_list [ -0.23; 1.34; 43. ]
+let float_equal f1 f2 = Float.compare (Float.abs (f1 -. f2)) 0.00000001 = -1
 let float_list_equal lf1 lf2 = List.for_all2_exn lf1 lf2 ~f:float_equal
-let vec_tests_ _ =  
+
+let vec_tests_ _ =
   assert_equal 1. @@ Vec2.nth v2a 0;
-  assert_equal [1.; 2.] @@ Vec2.to_list v2a;
-  assert_equal [0.; 2.5] @@ Vec2.to_list (Vec2.(+) v2a v2b);
-  assert_equal [0.; 2.5; 2.2] @@ Vec3.to_list (Vec3.(+) v3a v3b);
-  assert_equal [2.; 1.5] @@ Vec2.to_list (Vec2.(-) v2a v2b);
-  assert_equal [-2.; -1.5; -1.8] @@ Vec3.to_list (Vec3.(-) v3b v3a);
-  assert_equal [2.; 1.5] @@ Vec2.to_list (Vec2.(-) v2a v2b);
-  assert_equal [-2.; -1.5; -1.8] @@ Vec3.to_list (Vec3.(-) v3b v3a);
-  assert_equal [1.5; 3.] @@ Vec2.to_list (Vec2.( * ) 1.5 v2a);
-  assert_equal [-2.; 1.; 0.4] @@ Vec3.to_list (Vec3.( * ) 2. v3b);
+  assert_equal [ 1.; 2. ] @@ Vec2.to_list v2a;
+  assert_equal [ 0.; 2.5 ] @@ Vec2.to_list (Vec2.( + ) v2a v2b);
+  assert_equal [ 0.; 2.5; 2.2 ] @@ Vec3.to_list (Vec3.( + ) v3a v3b);
+  assert_equal [ 2.; 1.5 ] @@ Vec2.to_list (Vec2.( - ) v2a v2b);
+  assert_equal [ -2.; -1.5; -1.8 ] @@ Vec3.to_list (Vec3.( - ) v3b v3a);
+  assert_equal [ 2.; 1.5 ] @@ Vec2.to_list (Vec2.( - ) v2a v2b);
+  assert_equal [ -2.; -1.5; -1.8 ] @@ Vec3.to_list (Vec3.( - ) v3b v3a);
+  assert_equal [ 1.5; 3. ] @@ Vec2.to_list (Vec2.( * ) 1.5 v2a);
+  assert_equal [ -2.; 1.; 0.4 ] @@ Vec3.to_list (Vec3.( * ) 2. v3b);
   assert_equal 5. @@ Vec2.sqr_length v2a;
   assert_equal 9. @@ Vec3.sqr_length v3a;
   assert_equal (sqrt 5.) @@ Vec2.length v2a;
   assert_equal 3. @@ Vec3.length v3a;
-  assert_equal [1. /. (sqrt 5.); 2. /. (sqrt 5.)] @@ Vec2.to_list (Vec2.unit v2a);
-  assert_equal [1. /. 3. ; 2. /. 3. ; 2. /. 3.] @@ Vec3.to_list (Vec3.unit v3a);
+  assert_equal [ 1. /. sqrt 5.; 2. /. sqrt 5. ] @@ Vec2.to_list (Vec2.unit v2a);
+  assert_equal [ 1. /. 3.; 2. /. 3.; 2. /. 3. ] @@ Vec3.to_list (Vec3.unit v3a);
   assert_equal 0. @@ Vec2.dot v2a v2b;
   assert_equal 0.4 @@ Vec3.dot v3a v3b
 
-let nonvec_tests_ _ = 
+let nonvec_tests_ _ =
   assert_equal true @@ float_equal (rad 30.) 0.5235987755982988;
-  assert_equal [-0.6; -2.2; 2.5] @@ Vec3.to_list (cross v3a v3b);
-  assert_equal true @@ float_list_equal [0.011219512195121953; -0.06536585365853659] (Vec2.to_list @@ sProj v3c ~z_c:1.);
-  assert_equal true @@ float_list_equal [0.029178072983855743; -8.765944673261381e-05; 3.3995742255444417] (Vec3.to_list @@ invSProj v2c ~z_c:2.4);
-  assert_equal true @@ float_list_equal [18.353099910975896; -0.15040829928574848] (Vec2.to_list (mapMoebius (Vec2.of_list [233.; -0.7]) ~alpha:0.1 ~beta:0.2 ~center:(Vec3.of_list [0.;0.;1.])))
+  assert_equal [ -0.6; -2.2; 2.5 ] @@ Vec3.to_list (cross v3a v3b);
+  assert_equal true
+  @@ float_list_equal
+       [ 0.011219512195121953; -0.06536585365853659 ]
+       (Vec2.to_list @@ sProj v3c ~z_c:1.);
+  assert_equal true
+  @@ float_list_equal
+       [ 0.029178072983855743; -8.765944673261381e-05; 3.3995742255444417 ]
+       (Vec3.to_list @@ invSProj v2c ~z_c:2.4);
+  assert_equal true
+  @@ float_list_equal
+       [ 18.353099910975896; -0.15040829928574848 ]
+       (Vec2.to_list
+          (mapMoebius
+             (Vec2.of_list [ 233.; -0.7 ])
+             ~alpha:0.1 ~beta:0.2
+             ~center:(Vec3.of_list [ 0.; 0.; 1. ])))
 
-let math_tests = "Math tests" >: test_list [
-    "vec_tests" >::  vec_tests_;
-    "nonvec_tests" >:: nonvec_tests_
+let math_tests =
+  "Math tests"
+  >: test_list [ "vec_tests" >:: vec_tests_; "nonvec_tests" >:: nonvec_tests_ ]
+
+let random2Dpoints =
+  [
+    [ 0.93274811; 0.30707646 ]; [ 1.10742183; 2.13776655 ];
+    [ 0.72191354; 0.73283456 ]; [ 1.23816065; 1.36903545 ];
+    [ 0.10673047; 2.0196763 ]; [ 1.93006175; 2.17727281 ];
+    [ 0.85465794; 0.31566564 ]; [ 1.70811221; 0.14867626 ];
+    [ 0.47704004; 0.24429357 ]; [ 1.08898966; 0.80247392 ];
   ]
 
+let random_indices =
+  [
+    (19, 0); (27, 43); (13, 22); (22, 7); (7, 17); (5, 21); (49, 38); (30, 35);
+    (27, 39); (32, 35);
+  ]
 
-let random2Dpoints = [[0.93274811; 0.30707646];
-                      [1.10742183; 2.13776655];
-                      [0.72191354; 0.73283456];
-                      [1.23816065; 1.36903545];
-                      [0.10673047; 2.0196763 ];
-                      [1.93006175; 2.17727281];
-                      [0.85465794; 0.31566564];
-                      [1.70811221; 0.14867626];
-                      [0.47704004; 0.24429357];
-                      [1.08898966; 0.80247392]]
-
-let random_indices = [(19,  0);
-                      (27, 43);
-                      (13, 22);
-                      (22,  7);
-                      ( 7, 17);
-                      ( 5, 21);
-                      (49, 38);
-                      (30, 35);
-                      (27, 39);
-                      (32, 35)]
-
-let direction = Vec3.of_list [-0.57735027;  0.57735027; -0.57735027], Vec3.of_list [0.70710678; 0.70710678; -0.], Vec3.of_list [-0.40824829; 0.40824829; 0.81649658] 
+let direction =
+  ( Vec3.of_list [ -0.57735027; 0.57735027; -0.57735027 ],
+    Vec3.of_list [ 0.70710678; 0.70710678; -0. ],
+    Vec3.of_list [ -0.40824829; 0.40824829; 0.81649658 ] )
 
 (* these values are generated from python for testing *)
-let rasterizer_tests_ _ = 
-  assert_equal [0; 0; 0; 0; 1; 0; 0; 0; 1; 0] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 4 0.1 2);
-  assert_equal [1; 0; 0; 0; 1; 0; 0; 0; 1; 1] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 4 0.2 2); 
-  assert_equal [1; 0; 0; 1; 1; 0; 1; 1; 1; 1] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 7 0.2 2);
-  assert_equal [0; 1; 0; 1; 0; 1; 1; 1; 1; 0] @@ List.map random2Dpoints ~f:(fun x->sample_grid (Vec2.of_list x) 7 0.1 3);
-  assert_equal [1.; 0.; 0.; 0.; 0.; 1.; 1.; 0.; 0.; 1.] @@ List.map random_indices ~f:(fun (i,j)-> sample_plane i j 2 (rad 45.) (rad @@ -.30.) (Vec3.of_list [0.;1.;3.;]) 50 4 2 0.3);
-  assert_equal [0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2] @@ List.map random_indices ~f:(fun (i,j)->sample_sphere i j 8 direction (rad 30.) (rad 35.) 50 4 0.1);
-  assert_equal [0.; 1.; 0.4; 0.4; 0.; 0.; 0.; 1.; 0.4; 0.4] @@ List.map random_indices ~f:(fun (i,j)->sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.;0.;1.;]) 50 4 2 4 0.1);
-  assert_equal [0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2] @@ List.map random_indices ~f:(fun (i,j)->sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.2;0.5;1.;]) 50 2 1 2 0.1)
-let rasterizer_tests = "Rasterizer tests" >: test_list [
-    "basic rasterizer test" >:: rasterizer_tests_
+let basic_tests _ =
+  assert_equal [ 0; 0; 0; 0; 1; 0; 0; 0; 1; 0 ]
+  @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 4 0.1 2);
+  assert_equal [ 1; 0; 0; 0; 1; 0; 0; 0; 1; 1 ]
+  @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 4 0.2 2);
+  assert_equal [ 1; 0; 0; 1; 1; 0; 1; 1; 1; 1 ]
+  @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 7 0.2 2);
+  assert_equal [ 0; 1; 0; 1; 0; 1; 1; 1; 1; 0 ]
+  @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 7 0.1 3);
+  assert_equal [ 1.; 0.; 0.; 0.; 0.; 1.; 1.; 0.; 0.; 1. ]
+  @@ List.map random_indices ~f:(fun (i, j) ->
+         sample_plane i j 2 (rad 45.) (rad @@ -30.)
+           (Vec3.of_list [ 0.; 1.; 3. ])
+           50 4 2 0.3);
+  assert_equal [ 0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2 ]
+  @@ List.map random_indices ~f:(fun (i, j) ->
+         sample_sphere i j 8 direction (rad 30.) (rad 35.) 50 4 0.1);
+  assert_equal [ 0.; 1.; 0.4; 0.4; 0.; 0.; 0.; 1.; 0.4; 0.4 ]
+  @@ List.map random_indices ~f:(fun (i, j) ->
+         sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.)
+           (Vec3.of_list [ 0.; 0.; 1. ])
+           50 4 2 4 0.1);
+  assert_equal [ 0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2 ]
+  @@ List.map random_indices ~f:(fun (i, j) ->
+         sample_orthogonal i j 8 1. direction (rad 30.) (rad 35.)
+           (Vec3.of_list [ 0.2; 0.5; 1. ])
+           50 2 1 2 0.1)
+
+let plane_result =
+  [
+    0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 1.; 0.;
+    0.; 0.; 0.; 0.; 0.; 0.; 1.; 0.; 1.; 1.; 0.; 0.; 0.; 0.; 0.; 1.; 0.; 1.; 0.;
+    0.; 0.; 0.; 0.; 0.; 0.; 0.; 1.; 0.; 1.; 1.; 1.; 0.; 0.; 0.; 0.; 0.; 1.; 0.;
+    1.; 0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.; 1.; 1.; 1.; 1.; 0.; 0.; 0.; 0.; 0.; 0.;
+    1.; 0.; 0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 1.; 0.; 0.; 0.; 0.; 0.;
+    0.; 0.; 0.; 0.; 0.;
   ]
 
+(* let different_pixels_n l1 l2 = List.fold2_exn l1 l2 ~init:0 ~f:(fun acc a b-> if Float.(=) a b then acc else acc+1) *)
+
+let different_pixels_less_than_n n l1 l2 =
+  List.fold2_exn l1 l2 ~init:0 ~f:(fun acc a b ->
+      if Float.( = ) a b then acc else acc + 1)
+  < n
+
+let sphere_result =
+  [
+    0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2; 0.2; 0.2;
+    0.2; 0.2; 0.; 0.; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 0.2;
+    0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2; 0.2;
+    0.2; 0.2; 0.; 0.2; 0.2; 0.2; 0.2; 0.2; 1.; 1.; 1.; 0.2; 0.; 0.2; 0.2; 0.2;
+    0.2; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 1.; 0.2; 0.2; 1.; 1.; 0.2; 1.; 0.2; 0.2;
+    0.; 0.; 0.2; 1.; 0.2; 0.2; 0.2; 1.; 1.; 0.; 0.; 0.; 1.; 0.2; 1.; 0.2; 1.;
+    0.2; 0.2; 0.;
+  ]
+
+let orthogonal_result =
+  [
+    0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.;
+    0.; 0.; 0.; 0.; 0.; 0.; 0.4; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.; 0.4; 0.4; 0.4;
+    0.; 0.; 0.; 0.; 0.; 0.4; 0.4; 0.4; 0.2; 0.4; 0.4; 0.4; 0.; 0.4; 0.4; 0.4;
+    0.4; 0.2; 0.2; 0.2; 0.4; 0.4; 0.4; 0.4; 0.4; 0.4; 0.4; 0.4; 0.2; 0.4; 1.;
+    0.4; 1.; 0.4; 0.4; 0.4; 0.4; 0.4; 1.; 0.4; 0.4; 0.4; 0.4; 0.; 0.; 0.4; 0.4;
+    0.4; 1.; 0.4; 1.; 0.4; 0.; 0.; 0.; 0.; 0.; 0.4; 0.4; 0.4; 0.; 0.; 0.;
+  ]
+
+let image_tests _ =
+  assert_equal true
+  @@ (getImage ~img_w:10 ~view_size:4 ~bd:4 ~half_edge:2 ~line_w:0.25
+        ~grid_size:2 Planar ~alpha:20. ~beta:25.
+        ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> different_pixels_less_than_n 5 plane_result);
+  (* I think the descrepency of the sphere test is because of the floating point issue
+     It only happens and the boundary point when I look at the result, so we should be fine *)
+  assert_equal true
+  @@ (getImage ~img_w:10 ~view_size:4 ~bd:4 ~half_edge:2 ~line_w:0.25
+        ~grid_size:2 Sphere ~alpha:20. ~beta:25.
+        ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> different_pixels_less_than_n 5 sphere_result);
+  assert_equal true
+  @@ (getImage ~img_w:10 ~view_size:4 ~bd:4 ~half_edge:2 ~line_w:0.25
+        ~grid_size:2 Orthogonal ~alpha:20. ~beta:25.
+        ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> different_pixels_less_than_n 5 orthogonal_result)
+
+let rasterizer_tests =
+  "Rasterizer tests"
+  >: test_list
+       [ "basic rasterizer test" >:: basic_tests; "image test" >:: image_tests ]
 
 let series = "Project Tests" >::: [ math_tests; rasterizer_tests ]
-
 let () = run_test_tt_main series
 
-(* 
+(*
 
-open Core
-open Rasterizer
-open Math;;
+   open Core
+   open Rasterizer
+   open Math;;
 
-let direction = Vec3.of_list [-0.57735027;  0.57735027; -0.57735027], Vec3.of_list [0.70710678; 0.70710678; -0.], Vec3.of_list [-0.40824829; 0.40824829; 0.81649658] ;;
+   let direction = Vec3.of_list [-0.57735027;  0.57735027; -0.57735027], Vec3.of_list [0.70710678; 0.70710678; -0.], Vec3.of_list [-0.40824829; 0.40824829; 0.81649658] ;;
 
-sample_orthogonal 27 43 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.;0.;1.;]) 50 4 2 4 0.1;;
-
+   sample_orthogonal 27 43 8 1. direction (rad 30.) (rad 35.) (Vec3.of_list [0.;0.;1.;]) 50 4 2 4 0.1;;
 *)

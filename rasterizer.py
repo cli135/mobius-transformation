@@ -170,12 +170,12 @@ def sample_all(i, j, grid_size, cameraoffset= 0, view_direction = [0, -1, 1], al
             return 0
         c = sample_grid(mapMoebius(p_on_plane,alpha, beta, p_offset), grid_size, width, half_edge_length)
         if c==0:
-            return 0.2
+            return 0.4
     else:
         p_on_plane = mapSphereSample(p_on_sphere, alpha, beta) # TODO: supersampling?
         c = sample_grid(p_on_plane, grid_size, width, half_edge_length)
         if c==0:
-            return 0.4
+            return 0.2
     return c
 
 

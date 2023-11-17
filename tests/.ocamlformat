@@ -1,0 +1,1 @@
+break-collection-expressions = wrap # to avoid long vertical list in tests.ml

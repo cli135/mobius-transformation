@@ -145,7 +145,7 @@ type render_mode = Planar | Sphere | Orthogonal
 
 let getImage ?(camera_offset = 1.)
     ?(view_direction = Vec3.of_list [ 1.; -1.; 1. ]) ?(img_w = 100)
-    ?(viewsize = 8) ?(bd = 4) ?(half_edge = 1) ?(line_w = 0.1) ?(grid_size = 4)
+    ?(view_size = 8) ?(bd = 4) ?(half_edge = 1) ?(line_w = 0.1) ?(grid_size = 4)
     mode ~alpha ~beta ~center =
   let indices = cartesianProduct (List.range 0 img_w) (List.range 0 img_w) in
   let directions = compute_dir view_direction in
@@ -154,7 +154,7 @@ let getImage ?(camera_offset = 1.)
       (* planar *)
       List.map indices ~f:(fun (i, j) ->
           sample_plane i j grid_size (rad alpha) (rad beta) center img_w
-            viewsize half_edge line_w)
+            view_size half_edge line_w)
   | Sphere ->
       (* sample_sphere *)
       List.map indices ~f:(fun (i, j) ->
@@ -164,4 +164,4 @@ let getImage ?(camera_offset = 1.)
       (* sample orthogonal *)
       List.map indices ~f:(fun (i, j) ->
           sample_orthogonal i j grid_size camera_offset directions (rad alpha)
-            (rad beta) center img_w viewsize half_edge bd line_w)
+            (rad beta) center img_w view_size half_edge bd line_w)
