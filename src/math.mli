@@ -32,8 +32,12 @@ module Vec2 : Vec
 module Vec3 : Vec
 
 (* helper functions *)
+module Degree : sig
+  type t
+  val of_float : float -> t
+  val to_radian : t -> float
+end
 
-val rad : float -> float (* degree to radian *)
 val gt : float -> float -> bool
 val cross : Vec3.t -> Vec3.t -> Vec3.t
 val vec3ofvec2 : Vec3.t -> Vec2.t

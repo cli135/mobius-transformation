@@ -41,7 +41,7 @@ let vec_tests_ _ =
   assert_equal 0.4 @@ Vec3.dot v3a v3b
 
 let nonvec_tests_ _ =
-  assert_equal true @@ float_equal (rad 30.) 0.5235987755982988;
+  assert_equal true @@ float_equal (30. |> Degree.of_float |> Degree.to_radian ) 0.5235987755982988;
   assert_equal [ -0.6; -2.2; 2.5 ] @@ Vec3.to_list (cross v3a v3b);
   assert_equal true
   @@ float_list_equal
@@ -96,20 +96,20 @@ let basic_tests _ =
   @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 7 0.1 3);
   assert_equal [ 1.; 0.; 0.; 0.; 0.; 1.; 1.; 0.; 0.; 1. ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_plane ~i ~j ~grid_size:2 ~alpha:(rad 45.) ~beta:(rad @@ -30.)
+         sample_plane ~i ~j ~grid_size:2 ~alpha:(45. |> Degree.of_float |> Degree.to_radian) ~beta:(-30. |> Degree.of_float |> Degree.to_radian )
            ~center:(Vec3.of_list [ 0.; 1.; 3. ])
            ~img_w:50 ~view_size:4 ~half_edge_length:2 ~line_w:0.3);
   assert_equal [ 0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_sphere ~i ~j ~grid_size:8 ~directions:direction ~alpha:(rad 30.) ~beta:(rad 35.) ~img_w:50 ~half_edge_length:4 ~line_w:0.1);
+         sample_sphere ~i ~j ~grid_size:8 ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian ) ~img_w:50 ~half_edge_length:4 ~line_w:0.1);
   assert_equal [ 0.; 1.; 0.4; 0.4; 0.; 0.; 0.; 1.; 0.4; 0.4 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_orthogonal ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(rad 30.) ~beta:(rad 35.)
+         sample_orthogonal ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian )
            ~center:(Vec3.of_list [ 0.; 0.; 1. ]) 
            ~img_w:50 ~view_size:4 ~half_edge_length:2 ~plane_bd:4 ~line_w:0.1);
   assert_equal [ 0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_orthogonal  ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(rad 30.) ~beta:(rad 35.)
+         sample_orthogonal  ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian )
          ~center:(Vec3.of_list [ 0.2; 0.5; 1. ])
          ~img_w:50 ~view_size:2 ~half_edge_length:1 ~plane_bd:2 ~line_w:0.1)
 
@@ -152,19 +152,19 @@ let different_pixels_less_than_n n l1 l2 =
 let image_tests _ =
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Planar ~alpha:20. ~beta:25.
+        ~grid_size:2 Planar ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 plane_result);
   (* I think the descrepency of the sphere test is because of the floating point issue
      It only happens and the boundary point when I look at the result, so we should be fine *)
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Sphere ~alpha:20. ~beta:25.
+        ~grid_size:2 Sphere ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 sphere_result);
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Orthogonal ~alpha:20. ~beta:25.
+        ~grid_size:2 Orthogonal ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 orthogonal_result)
 

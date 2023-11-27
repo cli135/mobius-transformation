@@ -40,12 +40,17 @@ end) : Vec = struct
   let sqr_length v = Array.fold v ~init:0. ~f:(fun acc x -> acc +. (x *. x))
   let length v = Float.sqrt @@ sqr_length v
   let unit (v : t) : t = 1. /. length v * v
+
   let dot (v1 : t) (v2 : t) : float =
     Array.fold2_exn v1 v2 ~init:0. ~f:(fun acc x y -> acc +. (x *. y))
-  let print (v1:t) = 
-    print_string "[" ;
-    Array.map v1 ~f:(fun x-> print_string @@ string_of_float x; print_string ";") |> ignore;
-    print_endline "]" ;
+
+  let print (v1 : t) =
+    print_string "[";
+    Array.map v1 ~f:(fun x ->
+        print_string @@ string_of_float x;
+        print_string ";")
+    |> ignore;
+    print_endline "]"
 end
 
 module Vec2 : Vec = MakeNVec (struct
@@ -57,7 +62,20 @@ module Vec3 : Vec = MakeNVec (struct
 end)
 
 (* helper functions *)
-let rad x = x *. Float.pi /. 180. (* degree to radian *)
+
+module Degree : sig
+  type t
+  val of_float : float -> t
+  val to_radian : t -> float
+end = struct
+  type t = float
+  let of_float = Fn.id
+  let to_radian x = x *. Float.pi /. 180. (* replace with actual implementation *)
+end
+
+
+
+(* let rad x = x *. Float.pi /. 180. degree to radian *)
 let gt x y = Float.compare x y = 1 (* float greater than *)
 
 let cross v1 v2 =
@@ -68,7 +86,7 @@ let cross v1 v2 =
       (Vec3.nth v1 0 *. Vec3.nth v2 1) -. (Vec3.nth v1 1 *. Vec3.nth v2 0);
     ]
 
-let vec3ofvec2 v3 = Vec2.of_list [Vec3.nth v3 0; Vec3.nth v3 1]
+let vec3ofvec2 v3 = Vec2.of_list [ Vec3.nth v3 0; Vec3.nth v3 1 ]
 
 (* compute the projection between x^2+y^2+(z-z_c)^2=1 sphere to the z=0 plane, requires z_c > 0
    input and output are all global coordinates

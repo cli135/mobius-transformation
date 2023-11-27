@@ -105,7 +105,7 @@ val getImage :
   ?line_w:float -> (* width of grid lines *)
   ?grid_size:int -> (* number of lines. We will have grid_size grids and grid_size+1 vertical/horizontal corresponding lines *)
   render_mode -> (* output viewmode, this is non-parameterized bcs of warning 16 [unerasable-optional-argument] *)
-  alpha:float -> (* rotation along z axis in degree*)
-  beta:float -> (* rotation along y axis in degree *)
+  alpha:Degree.t -> (* rotation along z axis in degree*)
+  beta:Degree.t -> (* rotation along y axis in degree *)
   center:Vec3.t -> (* center of the sphere *)
   float list

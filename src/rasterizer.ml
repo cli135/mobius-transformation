@@ -153,16 +153,16 @@ let getImage ?(camera_offset = 1.)
   | Planar ->
       (* planar *)
       List.map indices ~f:(fun (i, j) ->
-          sample_plane ~i ~j ~grid_size ~alpha:(rad alpha) ~beta:(rad beta) ~center ~img_w
+          sample_plane ~i ~j ~grid_size ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta) ~center ~img_w
             ~view_size ~half_edge_length ~line_w)
   | Sphere ->
       (* sample_sphere *)
       List.map indices ~f:(fun (i, j) ->
-          sample_sphere ~i ~j ~grid_size ~directions ~alpha:(rad alpha) ~beta:(rad beta) ~img_w
+          sample_sphere ~i ~j ~grid_size ~directions ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta) ~img_w
             ~half_edge_length ~line_w)
   | Orthogonal ->
       (* sample orthogonal *)
       List.map indices ~f:(fun (i, j) ->
-          sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha:(rad alpha)
-            ~beta:(rad beta) ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
+          sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha:(Degree.to_radian alpha)
+            ~beta:(Degree.to_radian beta) ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
 (* the naming difference is so stupid maybe I will it later*)
