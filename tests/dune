@@ -12,7 +12,6 @@
     rasterizer
     math
     ascii_printer
-    user_interface
     core
     ounit2
   ))

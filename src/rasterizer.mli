@@ -14,77 +14,77 @@ val sample_grid : Vec2.t -> int -> float -> int -> int
    parameter list: i,j,grid_size,alphe,beta,center,image_w, viewsize, half_edge_length,width *)
 val sample_plane :
   (* i *)
-  int ->
+  i: int ->
   (* j *)
-  int ->
+  j: int ->
   (* grid_size *)
-  int ->
+  grid_size: int ->
   (* alpha *)
-  float ->
+  alpha: float ->
   (* beta *)
-  float ->
+  beta: float ->
   (* center *)
-  Vec3.t ->
+  center: Vec3.t ->
   (* image_w *)
-  int ->
+  img_w: int ->
   (* viewsize *)
-  int ->
+  view_size: int ->
   (* half_edge_length *)
-  int ->
+  half_edge_length: int ->
   (* width *)
-  float ->
+  line_w: float ->
   float
 
 (* Given pixel coordinate, return color for spherical view *)
 val sample_sphere :
   (* i *)
-  int ->
+  i:int ->
   (* j *)
-  int ->
+  j:int ->
   (* grid_size *)
-  int ->
+  grid_size:int ->
   (* directions *)
-  Vec3.t * Vec3.t * Vec3.t ->
+  directions: Vec3.t * Vec3.t * Vec3.t ->
   (* alpha *)
-  float ->
+  alpha: float ->
   (* beta *)
-  float ->
+  beta: float ->
   (* image_w *)
-  int ->
+  img_w:int ->
   (* half_edge_length *)
-  int ->
+  half_edge_length: int ->
   (* width *)
-  float ->
+  line_w: float ->
   float
 
 (* Given pixel coordinate, return the orthogonal projection view*)
 val sample_orthogonal :
   (* i *)
-  int ->
+  i:int ->
   (* j *)
-  int ->
+  j:int ->
   (* grid_size *)
-  int ->
+  grid_size:int ->
   (* cameraoffset *)
-  float ->
+  camera_offset:float ->
   (* directions *)
-  Vec3.t * Vec3.t * Vec3.t ->
+  directions: Vec3.t * Vec3.t * Vec3.t ->
   (* alpha *)
-  float ->
+  alpha: float ->
   (* beta *)
-  float ->
+  beta: float ->
   (* center *)
-  Vec3.t ->
+  center: Vec3.t ->
   (* image_w *)
-  int ->
+  img_w: int ->
   (* viewsize *)
-  int ->
+  view_size: int ->
   (* half_edge_length *)
-  int ->
+  half_edge_length: int ->
   (* plane_bd *)
-  int ->
+  plane_bd : int ->
   (* width *)
-  float ->
+  line_w: float ->
   float
 
 (*
@@ -100,11 +100,11 @@ val getImage :
   ?view_direction:Vec3.t -> (* camera forward direction *)
   ?img_w:int -> (* image width *)
   ?view_size:int -> (* the planar view size, e.g., in planar view we sees the [-view_size, view_size] x [-view_size, view_size] area *)
-  ?bd:int -> (* the orthogonal view boudnary. This is to prevent the planer image occupies the whole orthogonal view *)
-  ?half_edge:int -> (* the length of grid. The grid sit in the [-half_edge, half_edge] x [-half_edge, half_edge] area *)
+  ?plane_bd:int -> (* the orthogonal view boudnary. This is to prevent the planer image occupies the whole orthogonal view *)
+  ?half_edge_length:int -> (* the length of grid. The grid sit in the [-half_edge, half_edge] x [-half_edge, half_edge] area *)
   ?line_w:float -> (* width of grid lines *)
   ?grid_size:int -> (* number of lines. We will have grid_size grids and grid_size+1 vertical/horizontal corresponding lines *)
-  render_mode -> (* to get rid of warning 16 [unerasable-optional-argument] *)
+  render_mode -> (* output viewmode, this is non-parameterized bcs of warning 16 [unerasable-optional-argument] *)
   alpha:float -> (* rotation along z axis in degree*)
   beta:float -> (* rotation along y axis in degree *)
   center:Vec3.t -> (* center of the sphere *)

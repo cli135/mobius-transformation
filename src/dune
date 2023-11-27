@@ -49,7 +49,7 @@
   )
 )
 
-(library
+(executable
   (name user_interface)
   (modules user_interface)
   (libraries

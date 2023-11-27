@@ -34,9 +34,9 @@ let sample_grid v2 grid_size width half_edge_length =
      increase of i
 *)
 
-let sample_plane i j grid_size alpha beta center image_w viewsize
-    half_edge_length width =
-  let viewsize_f = float_of_int viewsize and image_w_f = float_of_int image_w in
+let sample_plane ~i ~j ~grid_size ~alpha ~beta ~center ~img_w ~view_size
+    ~half_edge_length ~line_w =
+  let viewsize_f = float_of_int view_size and image_w_f = float_of_int img_w in
   let p =
     Vec2.of_list
       [
@@ -45,7 +45,7 @@ let sample_plane i j grid_size alpha beta center image_w viewsize
       ]
   in
   let p_on_plane = mapMoebius p ~alpha ~beta ~center in
-  sample_grid p_on_plane grid_size width half_edge_length |> float_of_int
+  sample_grid p_on_plane grid_size line_w half_edge_length |> float_of_int
 
 (* ratio of a pixel in the image, helper function*)
 let ratio i image_w_f = ((2. *. float_of_int i) -. image_w_f) /. image_w_f
@@ -63,10 +63,10 @@ let pointOnSphere p_start forward_dir =
     Some (Vec3.( * ) (d1 -. l) forward_dir |> Vec3.( + ) p_start |> Vec3.unit)
 
 (* Given pixel coordinate, return color for spherical view *)
-let sample_sphere i j grid_size directions alpha beta image_w half_edge_length
-    width =
+let sample_sphere ~i ~j ~grid_size ~directions ~alpha ~beta ~img_w ~half_edge_length
+    ~line_w =
   let forward_dir, right_dir, up_dir = directions
-  and image_w_f = float_of_int image_w in
+  and image_w_f = float_of_int img_w in
   let p_start =
     Vec3.( * ) 2. forward_dir
     |> Fn.flip Vec3.( - ) (Vec3.( * ) (ratio i image_w_f) up_dir)
@@ -77,7 +77,7 @@ let sample_sphere i j grid_size directions alpha beta image_w half_edge_length
   | None -> 0.
   | Some p_on_sphere ->
       let p_on_plane = mapSphereSample p_on_sphere ~alpha ~beta in
-      let c = sample_grid p_on_plane grid_size width half_edge_length in
+      let c = sample_grid p_on_plane grid_size line_w half_edge_length in
       if c = 0 then 0.2 else 1.
 
 (*
@@ -92,13 +92,13 @@ let planeIntersection p_start forward_dir =
   Vec3.( + ) p_start (Vec3.( * ) t forward_dir) |> vec3ofvec2
 
 (* Given pixel coordinate, return the orthogonal projection view*)
-let sample_orthogonal i j grid_size cameraoffset directions alpha beta center
-    image_w view_size half_edge_length plane_bd width =
+let sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha ~beta ~center
+    ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w =
   let forward_dir, right_dir, up_dir = directions
-  and image_w_f = float_of_int image_w
+  and image_w_f = float_of_int img_w
   and view_size_f = float_of_int view_size in
   let p_start =
-    Vec3.of_list [ 0.; 0.; cameraoffset ]
+    Vec3.of_list [ 0.; 0.; camera_offset ]
     |> Fn.flip Vec3.( - ) (Vec3.( * ) 1.5 forward_dir)
     |> Fn.flip Vec3.( - ) (Vec3.( * ) (ratio i image_w_f *. view_size_f) up_dir)
     |> Vec3.( + ) (Vec3.( * ) (ratio j image_w_f *. view_size_f) right_dir)
@@ -119,13 +119,13 @@ let sample_orthogonal i j grid_size cameraoffset directions alpha beta center
         let c =
           sample_grid
             (mapMoebius p_on_plane ~alpha ~beta ~center)
-            grid_size width half_edge_length
+            grid_size line_w half_edge_length
         in
         if c = 0 then 0.4 else 1.
   | Some p_on_sphere ->
       (* sample from sphere*)
       let p_on_plane = mapSphereSample p_on_sphere ~alpha ~beta in
-      let c = sample_grid p_on_plane grid_size width half_edge_length in
+      let c = sample_grid p_on_plane grid_size line_w half_edge_length in
       if c = 0 then 0.2 else 1.
 
 let cartesianProduct l1 l2 =
@@ -145,7 +145,7 @@ type render_mode = Planar | Sphere | Orthogonal
 
 let getImage ?(camera_offset = 1.)
     ?(view_direction = Vec3.of_list [ 1.; -1.; 1. ]) ?(img_w = 100)
-    ?(view_size = 8) ?(bd = 4) ?(half_edge = 1) ?(line_w = 0.1) ?(grid_size = 4)
+    ?(view_size = 8) ?(plane_bd = 4) ?(half_edge_length = 1) ?(line_w = 0.1) ?(grid_size = 4)
     mode ~alpha ~beta ~center =
   let indices = cartesianProduct (List.range 0 img_w) (List.range 0 img_w) in
   let directions = compute_dir view_direction in
@@ -153,15 +153,16 @@ let getImage ?(camera_offset = 1.)
   | Planar ->
       (* planar *)
       List.map indices ~f:(fun (i, j) ->
-          sample_plane i j grid_size (rad alpha) (rad beta) center img_w
-            view_size half_edge line_w)
+          sample_plane ~i ~j ~grid_size ~alpha:(rad alpha) ~beta:(rad beta) ~center ~img_w
+            ~view_size ~half_edge_length ~line_w)
   | Sphere ->
       (* sample_sphere *)
       List.map indices ~f:(fun (i, j) ->
-          sample_sphere i j grid_size directions (rad alpha) (rad beta) img_w
-            half_edge line_w)
+          sample_sphere ~i ~j ~grid_size ~directions ~alpha:(rad alpha) ~beta:(rad beta) ~img_w
+            ~half_edge_length ~line_w)
   | Orthogonal ->
       (* sample orthogonal *)
       List.map indices ~f:(fun (i, j) ->
-          sample_orthogonal i j grid_size camera_offset directions (rad alpha)
-            (rad beta) center img_w view_size half_edge bd line_w)
+          sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha:(rad alpha)
+            ~beta:(rad beta) ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
+(* the naming difference is so stupid maybe I will it later*)
