@@ -5,6 +5,10 @@ For example, the user can change alpha and beta parameters of the Moebius transf
 which will render an image that is updated accordingly.
 
 *)
+(* open Core
+open Math
+open Rasterizer
+open Ascii_printer *)
 (*
 
 open Core

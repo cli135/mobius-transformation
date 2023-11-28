@@ -1,4 +1,4 @@
-(*
+
 
 (* Intentionally left empty until your implementation *)
 open Core
@@ -7,10 +7,10 @@ open Core
 (* Beginning draft of function *)
 
 *)
-let print_ascii_image (image : float list) : unit =
+let print_ascii_image (image : float list) (image_width : int) : unit =
   (* input is a grayscale list *)
   (* let grid = make_list_grid 200 200 in *)
-  let image_width = 200 in
+  let image_width = image_width in
   (* let image_height = 200 in *)
   (* let width_of_terminal = 120 in
   let aspect_ratio = 1 / (image_width / image_height) in *)
@@ -49,4 +49,3 @@ let print_ascii_image (image : float list) : unit =
       if j = image_width - 1 then print_endline "" else print_string ""
     ))
   
-*)
