@@ -42,16 +42,19 @@ let display_static_image display_type alpha beta img_w : unit =
       in
       ()
 
-let animate_beta ~low ~high frame_rate display_type alpha img_w =
+let animate_beta ~low ~high frame_rate display_type alpha img_w duration =
   let sleep_time = 1. /. float_of_int frame_rate in
   let betas =
-    List.range 0 frame_rate
-    |> List.map ~f:(fun x -> float_of_int x *. (high -. low) *. sleep_time)
+    List.range 0 (int_of_float (float_of_int frame_rate *. duration))
+    |> List.map ~f:(fun x ->
+           (float_of_int x *. (high -. low) *. sleep_time /. duration) +. low)
   and redraw_and_sleep beta =
-    display_static_image display_type alpha beta img_w; Caml_unix.sleepf sleep_time
+    display_static_image display_type alpha beta img_w;
+    Caml_unix.sleepf sleep_time
+    (* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
   in
-  List.iter betas ~f:(fun beta ->
-      redraw_and_sleep beta)
+
+  List.iter betas ~f:(fun beta -> redraw_and_sleep beta)
 
 let rec looping () =
   Out_channel.output_string stdout "enter something: \n";
@@ -68,7 +71,7 @@ let rec looping () =
             "the value cannot be convert to a float\n";
           looping ()
       | Some f ->
-          animate_beta ~low:0. ~high:f 30 "orthogonal" 0. 50;
+          animate_beta ~low:15. ~high:f 30 "orthogonal" 0. 50 1.5;
           looping ())
 
 (* do something here, probably update internal values and redraw the ascii images *)
