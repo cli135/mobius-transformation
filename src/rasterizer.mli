@@ -14,9 +14,9 @@ val sample_grid : Vec2.t -> int -> float -> int -> int
    parameter list: i,j,grid_size,alphe,beta,center,image_w, viewsize, half_edge_length,width *)
 val sample_plane :
   (* i *)
-  i: int ->
+  i: float ->
   (* j *)
-  j: int ->
+  j: float ->
   (* grid_size *)
   grid_size: int ->
   (* alpha *)
@@ -38,9 +38,9 @@ val sample_plane :
 (* Given pixel coordinate, return color for spherical view *)
 val sample_sphere :
   (* i *)
-  i:int ->
+  i:float ->
   (* j *)
-  j:int ->
+  j:float ->
   (* grid_size *)
   grid_size:int ->
   (* directions *)
@@ -60,9 +60,9 @@ val sample_sphere :
 (* Given pixel coordinate, return the orthogonal projection view*)
 val sample_orthogonal :
   (* i *)
-  i:int ->
+  i:float ->
   (* j *)
-  j:int ->
+  j:float ->
   (* grid_size *)
   grid_size:int ->
   (* cameraoffset *)
@@ -104,6 +104,7 @@ val getImage :
   ?half_edge_length:int -> (* the length of grid. The grid sit in the [-half_edge, half_edge] x [-half_edge, half_edge] area *)
   ?line_w:float -> (* width of grid lines *)
   ?grid_size:int -> (* number of lines. We will have grid_size grids and grid_size+1 vertical/horizontal corresponding lines *)
+  ?sampling_n: int -> (* number of samples per pixel *)
   render_mode -> (* output viewmode, this is non-parameterized bcs of warning 16 [unerasable-optional-argument] *)
   alpha:Degree.t -> (* rotation along z axis in degree*)
   beta:Degree.t -> (* rotation along y axis in degree *)

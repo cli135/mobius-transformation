@@ -78,7 +78,7 @@ let random_indices =
   [
     (19, 0); (27, 43); (13, 22); (22, 7); (7, 17); (5, 21); (49, 38); (30, 35);
     (27, 39); (32, 35);
-  ]
+  ] |> List.map ~f:(fun (x, y) -> float_of_int x, float_of_int y)
 
 let direction =
   ( Vec3.of_list [ -0.57735027; 0.57735027; -0.57735027 ],
@@ -153,19 +153,19 @@ let different_pixels_less_than_n n l1 l2 =
 let image_tests _ =
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Planar ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+        ~grid_size:2 ~sampling_n:1 Planar ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 plane_result);
   (* I think the descrepency of the sphere test is because of the floating point issue
      It only happens and the boundary point when I look at the result, so we should be fine *)
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Sphere ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+        ~grid_size:2 ~sampling_n:1 Sphere ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 sphere_result);
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Orthogonal ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+        ~grid_size:2 ~sampling_n:1 Orthogonal ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 orthogonal_result)
 

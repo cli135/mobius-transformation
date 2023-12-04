@@ -40,15 +40,15 @@ let sample_plane ~i ~j ~grid_size ~alpha ~beta ~center ~img_w ~view_size
   let p =
     Vec2.of_list
       [
-        -.viewsize_f +. (2.0 *. float_of_int j /. image_w_f *. viewsize_f);
-        viewsize_f -. (2.0 *. float_of_int i /. image_w_f *. viewsize_f);
+        -.viewsize_f +. (2.0 *. j /. image_w_f *. viewsize_f);
+        viewsize_f -. (2.0 *. i /. image_w_f *. viewsize_f);
       ]
   in
   let p_on_plane = mapMoebius p ~alpha ~beta ~center in
   sample_grid p_on_plane grid_size line_w half_edge_length |> float_of_int
 
 (* ratio of a pixel in the image, helper function*)
-let ratio i image_w_f = ((2. *. float_of_int i) -. image_w_f) /. image_w_f
+let ratio i image_w_f = ((2. *. i) -. image_w_f) /. image_w_f
 
 (* project a point to sphere *)
 let pointOnSphere p_start forward_dir =
@@ -63,8 +63,8 @@ let pointOnSphere p_start forward_dir =
     Some (Vec3.( * ) (d1 -. l) forward_dir |> Vec3.( + ) p_start |> Vec3.unit)
 
 (* Given pixel coordinate, return color for spherical view *)
-let sample_sphere ~i ~j ~grid_size ~directions ~alpha ~beta ~img_w ~half_edge_length
-    ~line_w =
+let sample_sphere ~i ~j ~grid_size ~directions ~alpha ~beta ~img_w
+    ~half_edge_length ~line_w =
   let forward_dir, right_dir, up_dir = directions
   and image_w_f = float_of_int img_w in
   let p_start =
@@ -92,8 +92,8 @@ let planeIntersection p_start forward_dir =
   Vec3.( + ) p_start (Vec3.( * ) t forward_dir) |> vec3ofvec2
 
 (* Given pixel coordinate, return the orthogonal projection view*)
-let sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha ~beta ~center
-    ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w =
+let sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha ~beta
+    ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w =
   let forward_dir, right_dir, up_dir = directions
   and image_w_f = float_of_int img_w
   and view_size_f = float_of_int view_size in
@@ -143,26 +143,56 @@ let compute_dir view_direction =
 
 type render_mode = Planar | Sphere | Orthogonal
 
+(* get the int * int pixel, return a list of float * float as the supersampling points*)
+let super_sampling_points c ij =
+  let i_, j_ = ij in
+  let i, j = (float_of_int i_, float_of_int j_) in
+  match c with
+  | 1 -> [ (i, j) ]
+  | 4 ->
+      (* this is hard coded bcs it's enough for this application*)
+      [
+        (i +. 0.25, j +. 0.25);
+        (i +. 0.25, j -. 0.25);
+        (i -. 0.25, j +. 0.25);
+        (i -. 0.25, j -. 0.25);
+      ]
+  | _ -> failwith "undefined number of samples"
+
 let getImage ?(camera_offset = 1.)
     ?(view_direction = Vec3.of_list [ 1.; -1.; 1. ]) ?(img_w = 100)
-    ?(view_size = 8) ?(plane_bd = 4) ?(half_edge_length = 1) ?(line_w = 0.1) ?(grid_size = 4)
-    mode ~alpha ~beta ~center =
-  let indices = cartesianProduct (List.range 0 img_w) (List.range 0 img_w) in
-  let directions = compute_dir view_direction in
+    ?(view_size = 8) ?(plane_bd = 4) ?(half_edge_length = 1) ?(line_w = 0.1)
+    ?(grid_size = 4) ?(sampling_n = 4) mode ~alpha ~beta ~center =
+  let indices =
+    cartesianProduct (List.range 0 img_w) (List.range 0 img_w)
+    |> List.map ~f:(super_sampling_points sampling_n)
+  in
+  let averaging l =
+    List.fold l ~init:0. ~f:( +. ) /. float_of_int (List.length l)
+  and directions = compute_dir view_direction in
   match mode with
   | Planar ->
       (* planar *)
-      List.map indices ~f:(fun (i, j) ->
-          sample_plane ~i ~j ~grid_size ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta) ~center ~img_w
-            ~view_size ~half_edge_length ~line_w)
+      List.map indices ~f:(fun ij_list ->
+          List.map ij_list ~f:(fun (i, j) ->
+              sample_plane ~i ~j ~grid_size ~alpha:(Degree.to_radian alpha)
+                ~beta:(Degree.to_radian beta) ~center ~img_w ~view_size
+                ~half_edge_length ~line_w)
+          |> averaging)
   | Sphere ->
       (* sample_sphere *)
-      List.map indices ~f:(fun (i, j) ->
-          sample_sphere ~i ~j ~grid_size ~directions ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta) ~img_w
-            ~half_edge_length ~line_w)
+      List.map indices ~f:(fun ij_list ->
+          List.map ij_list ~f:(fun (i, j) ->
+              sample_sphere ~i ~j ~grid_size ~directions
+                ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta)
+                ~img_w ~half_edge_length ~line_w)
+          |> averaging)
   | Orthogonal ->
       (* sample orthogonal *)
-      List.map indices ~f:(fun (i, j) ->
-          sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha:(Degree.to_radian alpha)
-            ~beta:(Degree.to_radian beta) ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
+      List.map indices ~f:(fun ij_list ->
+          List.map ij_list ~f:(fun (i, j) ->
+              sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions
+                ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta)
+                ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
+          |> averaging)
 (* the naming difference is so stupid maybe I will it later*)
