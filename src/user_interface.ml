@@ -104,56 +104,35 @@ let animate_beta ~low ~high frame_rate display_type alpha img_w duration =
 
   List.iter betas ~f:(fun beta -> redraw_and_sleep beta)
 
-(* let keyframe_list_arc n ?(r = 2.) =
-   let get_location i =
-     if i < n then
-       let theta = float_of_int i /. float_of_int n /. 4. in
-       Vec3.of_list [ r *. Float.sin theta; r -. (r *. Float.cos theta); 0. ]
-     else
-       let theta = float_of_int (i - n) /. float_of_int n /. 4. in
-       Vec3.of_list [ r -. (r *. Float.cos theta); r *. Float.sin theta; 0. ]
-   in
-   let get_params i =
-     {
-       alpha = Degree.of_float 0.;
-       beta = Degree.of_float 0.;
-       center = get_location i;
-     }
-   in
-   List.map ~f:get_params (List.range 0 (2 * n)) *)
-
 (* keyframe animation *)
 type keyframe_params = { alpha : Degree.t; beta : Degree.t; center : Vec3.t }
 
 let linear_interpolate (k1 : keyframe_params) (k2 : keyframe_params) (t : float)
     : keyframe_params =
   let alpha =
-    Degree.of_float
-      (Degree.to_float k1.alpha
-      +. ((Degree.to_float k2.alpha -. Degree.to_float k1.alpha) *. t))
+    Degree.( - ) k2.alpha k1.alpha |> Degree.( * ) t |> Degree.( + ) k1.alpha
   and beta =
-    Degree.of_float
-      (Degree.to_float k1.beta
-      +. ((Degree.to_float k2.beta -. Degree.to_float k1.beta) *. t))
+    Degree.( - ) k2.beta k1.beta |> Degree.( * ) t |> Degree.( + ) k1.beta
   and center =
     Vec3.( - ) k2.center k1.center |> Vec3.( * ) t |> Vec3.( + ) k1.center
   in
   { alpha; beta; center }
 
-let keyframe_animation k1 k2 frame_rate display_type img_w duration interpolation_method=
-  let sleep_time = 1. /. float_of_int frame_rate
-  and total_frames = int_of_float (float_of_int frame_rate *. duration) in
-  let keyframes =
-    List.range 0 total_frames
-    |> List.map ~f:(fun t ->
-    interpolation_method k1 k2 (float_of_int t /. float_of_int total_frames))
-  and redraw_and_sleep { alpha; beta; center } =
+let generate_keyframes k1 k2 frame_rate duration interpolation_method =
+  let total_frames = int_of_float (float_of_int frame_rate *. duration) in
+  List.range 0 (total_frames+1)
+  |> List.map ~f:(fun t ->
+         interpolation_method k1 k2 (float_of_int t /. float_of_int total_frames))
+
+(* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
+let show_animation display_type frame_rate keyframes_list =
+  let sleep_time = 1. /. float_of_int frame_rate in
+  let redraw_and_sleep { alpha; beta; center } =
     display_static_image display_type (Degree.to_float alpha)
-      (Degree.to_float beta) img_w ~center;
+      (Degree.to_float beta) !current_img_w ~center; 
     Caml_unix.sleepf sleep_time
   in
-  List.iter keyframes ~f:redraw_and_sleep
-(* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
+  List.iter keyframes_list ~f:redraw_and_sleep
 
 (* analogous animation for alpha *)
 let animate_alpha ~low ~high frame_rate display_type beta img_w duration =
@@ -171,6 +150,97 @@ let animate_alpha ~low ~high frame_rate display_type beta img_w duration =
 
   List.iter alphas ~f:(fun alpha -> redraw_and_sleep alpha)
 
+(* the following part is for the hardcoded animation *)
+
+(* this arc is a special one so I am just going to hard code it *)
+let keyframe_list_arc ?(r = 2.) frame_rate duration change_angle =
+  let total_frames = int_of_float (float_of_int frame_rate *. duration) in
+  let half_frames = total_frames / 2 in
+  let get_location i =
+    if i < half_frames then
+      let theta =
+        float_of_int i /. float_of_int half_frames /. 2. *. Float.pi
+      in
+      Vec3.of_list [ r *. Float.sin theta; r -. (r *. Float.cos theta); 1. ]
+    else
+      let theta =
+        float_of_int (i - half_frames)
+        /. float_of_int half_frames /. 2. *. Float.pi
+      in
+      Vec3.of_list [ r -. (r *. Float.sin theta); r *. Float.cos theta; 1. ]
+  in
+  let get_params i =
+    if change_angle then 
+      {
+      alpha = Degree.of_float @@ 180. /. float_of_int total_frames *. float_of_int i;
+      beta = Degree.of_float @@ 360. /. float_of_int total_frames *. float_of_int i;
+      center = get_location i;
+    }
+    else
+    {
+      alpha = Degree.of_float 0.;
+      beta = Degree.of_float 0.;
+      center = get_location i;
+    }
+  in
+  List.map ~f:get_params (List.range 0 (total_frames + 1))
+
+(* hard coded animation to play *)
+let cool_animation =
+  List.concat
+    [
+      keyframe_list_arc 30 1.5 false;
+      generate_keyframes
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 1. ];
+        }
+        {
+          alpha = Degree.of_float 180.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 1. ];
+        }
+        30 1.2 linear_interpolate;
+        generate_keyframes
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 1. ];
+        }
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 4. ];
+        }
+        30 0.5 linear_interpolate;
+        generate_keyframes
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 4. ];
+        }
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 1.5 ];
+        }
+        30 0.5 linear_interpolate;
+        generate_keyframes
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 0.;
+          center = Vec3.of_list [ 0.; 0.; 1.5 ];
+        }
+        {
+          alpha = Degree.of_float 0.;
+          beta = Degree.of_float 360.;
+          center = Vec3.of_list [ 0.; 0.; 1.5 ];
+        }
+        30 1.5 linear_interpolate;
+        keyframe_list_arc 30 3. true;
+    ]
+
 let rec looping () =
   Out_channel.output_string stdout "enter something: \n";
   Out_channel.flush stdout;
@@ -182,7 +252,7 @@ let rec looping () =
       Out_channel.flush stdout;
       match s with
       | "debug" ->
-          keyframe_animation
+          generate_keyframes
             {
               alpha = Degree.of_float 0.;
               beta = Degree.of_float 0.;
@@ -193,7 +263,11 @@ let rec looping () =
               beta = Degree.of_float 90.;
               center = Vec3.of_list [ 0.; 2.; 3. ];
             }
-            30 "orthogonal" 50 1.5 linear_interpolate;
+            30 1.5 linear_interpolate
+          |> show_animation "orthogonal" 30;
+          looping ()
+      | "cool" ->
+          show_animation "orthogonal" 30 cool_animation;
           looping ()
       | _ -> parse_command_strings_in_loop s)
 

@@ -36,6 +36,9 @@ module Degree : sig
   type t
   val of_float : float -> t
   val to_float : t -> float
+  val (+) : t -> t -> t
+  val (-) : t -> t -> t
+  val ( * ) : float -> t -> t
   val to_radian : t -> float
 end
 
