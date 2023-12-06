@@ -35,6 +35,7 @@ module Vec3 : Vec
 module Degree : sig
   type t
   val of_float : float -> t
+  val to_float : t -> float
   val to_radian : t -> float
 end
 

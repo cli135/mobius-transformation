@@ -66,10 +66,12 @@ end)
 module Degree : sig
   type t
   val of_float : float -> t
+  val to_float : t -> float
   val to_radian : t -> float
 end = struct
   type t = float
   let of_float = Fn.id
+  let to_float = Fn.id
   let to_radian x = x *. Float.pi /. 180. (* replace with actual implementation *)
 end
 
