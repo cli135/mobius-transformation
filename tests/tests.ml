@@ -41,8 +41,18 @@ let vec_tests_ _ =
   assert_equal 0. @@ Vec2.dot v2a v2b;
   assert_equal 0.4 @@ Vec3.dot v3a v3b
 
+let degree_tests_ _ =
+  assert_equal 1.5 @@ (Degree.of_float 1.5 |> Degree.to_float);
+  assert_equal true
+  @@ float_equal (Degree.of_float 10.
+     |> Degree.( + ) (Degree.of_float 6.)
+     |> Fn.flip Degree.( - ) (Degree.of_float 1.)
+     |> Degree.( * ) 0.1
+     |> Degree.to_float) 1.5
+
 let nonvec_tests_ _ =
-  assert_equal true @@ float_equal (30. |> Degree.of_float |> Degree.to_radian ) 0.5235987755982988;
+  assert_equal true
+  @@ float_equal (30. |> Degree.of_float |> Degree.to_radian) 0.5235987755982988;
   assert_equal [ -0.6; -2.2; 2.5 ] @@ Vec3.to_list (cross v3a v3b);
   assert_equal true
   @@ float_list_equal
@@ -63,7 +73,7 @@ let nonvec_tests_ _ =
 
 let math_tests =
   "Math tests"
-  >: test_list [ "vec_tests" >:: vec_tests_; "nonvec_tests" >:: nonvec_tests_ ]
+  >: test_list [ "vec_tests" >:: vec_tests_; "degree_tests" >:: degree_tests_ ;"nonvec_tests" >:: nonvec_tests_]
 
 let random2Dpoints =
   [
@@ -78,7 +88,8 @@ let random_indices =
   [
     (19, 0); (27, 43); (13, 22); (22, 7); (7, 17); (5, 21); (49, 38); (30, 35);
     (27, 39); (32, 35);
-  ] |> List.map ~f:(fun (x, y) -> float_of_int x, float_of_int y)
+  ]
+  |> List.map ~f:(fun (x, y) -> (float_of_int x, float_of_int y))
 
 let direction =
   ( Vec3.of_list [ -0.57735027; 0.57735027; -0.57735027 ],
@@ -97,22 +108,33 @@ let basic_tests _ =
   @@ List.map random2Dpoints ~f:(fun x -> sample_grid (Vec2.of_list x) 7 0.1 3);
   assert_equal [ 1.; 0.; 0.; 0.; 0.; 1.; 1.; 0.; 0.; 1. ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_plane ~i ~j ~grid_size:2 ~alpha:(45. |> Degree.of_float |> Degree.to_radian) ~beta:(-30. |> Degree.of_float |> Degree.to_radian )
+         sample_plane ~i ~j ~grid_size:2
+           ~alpha:(45. |> Degree.of_float |> Degree.to_radian)
+           ~beta:(-30. |> Degree.of_float |> Degree.to_radian)
            ~center:(Vec3.of_list [ 0.; 1.; 3. ])
            ~img_w:50 ~view_size:4 ~half_edge_length:2 ~line_w:0.3);
   assert_equal [ 0.; 1.; 0.2; 0.2; 0.2; 0.2; 0.; 0.2; 1.; 0.2 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_sphere ~i ~j ~grid_size:8 ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian ) ~img_w:50 ~half_edge_length:4 ~line_w:0.1);
+         sample_sphere ~i ~j ~grid_size:8 ~directions:direction
+           ~alpha:(30. |> Degree.of_float |> Degree.to_radian)
+           ~beta:(35. |> Degree.of_float |> Degree.to_radian)
+           ~img_w:50 ~half_edge_length:4 ~line_w:0.1);
   assert_equal [ 0.; 1.; 0.4; 0.4; 0.; 0.; 0.; 1.; 0.4; 0.4 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_orthogonal ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian )
-           ~center:(Vec3.of_list [ 0.; 0.; 1. ]) 
+         sample_orthogonal ~i ~j ~grid_size:8 ~camera_offset:1.
+           ~directions:direction
+           ~alpha:(30. |> Degree.of_float |> Degree.to_radian)
+           ~beta:(35. |> Degree.of_float |> Degree.to_radian)
+           ~center:(Vec3.of_list [ 0.; 0.; 1. ])
            ~img_w:50 ~view_size:4 ~half_edge_length:2 ~plane_bd:4 ~line_w:0.1);
   assert_equal [ 0.; 1.; 0.; 0.; 0.; 0.; 0.; 0.2; 0.2; 0.2 ]
   @@ List.map random_indices ~f:(fun (i, j) ->
-         sample_orthogonal  ~i ~j ~grid_size:8 ~camera_offset:1. ~directions:direction ~alpha:(30. |> Degree.of_float |> Degree.to_radian ) ~beta:(35. |> Degree.of_float |> Degree.to_radian )
-         ~center:(Vec3.of_list [ 0.2; 0.5; 1. ])
-         ~img_w:50 ~view_size:2 ~half_edge_length:1 ~plane_bd:2 ~line_w:0.1)
+         sample_orthogonal ~i ~j ~grid_size:8 ~camera_offset:1.
+           ~directions:direction
+           ~alpha:(30. |> Degree.of_float |> Degree.to_radian)
+           ~beta:(35. |> Degree.of_float |> Degree.to_radian)
+           ~center:(Vec3.of_list [ 0.2; 0.5; 1. ])
+           ~img_w:50 ~view_size:2 ~half_edge_length:1 ~plane_bd:2 ~line_w:0.1)
 
 let plane_result =
   [
@@ -152,20 +174,23 @@ let different_pixels_less_than_n n l1 l2 =
 
 let image_tests _ =
   assert_equal true
-  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 ~sampling_n:1 Planar ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2
+        ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Planar
+        ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 plane_result);
   (* I think the descrepency of the sphere test is because of the floating point issue
      It only happens and the boundary point when I look at the result, so we should be fine *)
   assert_equal true
-  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 ~sampling_n:1 Sphere ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2
+        ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Sphere
+        ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 sphere_result);
   assert_equal true
-  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 ~sampling_n:1 Orthogonal ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
+  @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2
+        ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Orthogonal
+        ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
      |> different_pixels_less_than_n 5 orthogonal_result)
 
@@ -175,7 +200,7 @@ let rasterizer_tests =
        [ "basic rasterizer test" >:: basic_tests; "image test" >:: image_tests ]
 
 (* open Ascii_printer *)
-let basic_print_ascii_tests _ = 
+let basic_print_ascii_tests _ =
   (*
   let image_width = 100 in
   let img =
@@ -200,10 +225,11 @@ let basic_print_ascii_tests _ =
 
 let print_ascii_tests =
   "Printing ascii tests"
-  >: test_list
-    ["basic print ascii test" >:: basic_print_ascii_tests]
+  >: test_list [ "basic print ascii test" >:: basic_print_ascii_tests ]
 
-let series = "Project Tests" >::: [ math_tests; rasterizer_tests; print_ascii_tests]
+let series =
+  "Project Tests" >::: [ math_tests; rasterizer_tests; print_ascii_tests ]
+
 let () = run_test_tt_main series
 
 (*
