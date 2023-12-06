@@ -140,13 +140,13 @@ let linear_interpolate (k1 : keyframe_params) (k2 : keyframe_params) (t : float)
   in
   { alpha; beta; center }
 
-let keyframe_animation k1 k2 frame_rate display_type img_w duration =
+let keyframe_animation k1 k2 frame_rate display_type img_w duration interpolation_method=
   let sleep_time = 1. /. float_of_int frame_rate
   and total_frames = int_of_float (float_of_int frame_rate *. duration) in
   let keyframes =
     List.range 0 total_frames
     |> List.map ~f:(fun t ->
-           linear_interpolate k1 k2 (float_of_int t /. float_of_int total_frames))
+    interpolation_method k1 k2 (float_of_int t /. float_of_int total_frames))
   and redraw_and_sleep { alpha; beta; center } =
     display_static_image display_type (Degree.to_float alpha)
       (Degree.to_float beta) img_w ~center;
@@ -193,7 +193,7 @@ let rec looping () =
               beta = Degree.of_float 90.;
               center = Vec3.of_list [ 0.; 2.; 3. ];
             }
-            30 "orthogonal" 50 1.5;
+            30 "orthogonal" 50 1.5 linear_interpolate;
           looping ()
       | _ -> parse_command_strings_in_loop s)
 
