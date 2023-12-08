@@ -280,7 +280,7 @@ and parse_command_strings_in_loop (s : string) =
      since it involves nested pattern matching cases on Some and None, with
      early exits for None, just a guess *)
   match tokens_in_command_string with
-  | [ "animate"; "alpha"; low; high; framerate; duration ] -> (
+  | [ "alpha"; low; high; framerate; duration ] -> (
       match
         ( float_of_string_opt low,
           float_of_string_opt high,
@@ -301,7 +301,7 @@ and parse_command_strings_in_loop (s : string) =
              they should be float float int float\n";
           looping ())
   (* this is just one additional value to add to to alpha *)
-  | [ "animate"; "alpha"; additional_alpha; framerate; duration ] -> (
+  | [ "alpha"; additional_alpha; framerate; duration ] -> (
       match
         ( float_of_string_opt additional_alpha,
           int_of_string_opt framerate,
@@ -321,7 +321,7 @@ and parse_command_strings_in_loop (s : string) =
             "one of the values entered cannot be convert to the proper data type\n\
              they should be float int float\n";
           looping ())
-  | [ "animate"; "beta"; low; high; framerate; duration ] -> (
+  | [ "beta"; low; high; framerate; duration ] -> (
       match
         ( float_of_string_opt low,
           float_of_string_opt high,
@@ -342,7 +342,7 @@ and parse_command_strings_in_loop (s : string) =
              they should be float float int float\n";
           looping ())
   (* this is just one additional value to add to to alpha *)
-  | [ "animate"; "beta"; additional_beta; framerate; duration ] -> (
+  | [ "beta"; additional_beta; framerate; duration ] -> (
       match
         ( float_of_string_opt additional_beta,
           int_of_string_opt framerate,
@@ -455,21 +455,9 @@ and parse_command_strings_in_loop (s : string) =
           looping ())
   | _ ->
       Out_channel.output_string stdout
-        "the command is not one of the possible commands: animate, change view \
-         to, move, set\n";
+        "the command is not one of the possible commands: alpha, beta, change view \
+         to, move center, set\n";
       looping ()
-
-(* match float_of_string_opt s with
-    | None ->
-        Out_channel.output_string stdout
-          "the value cannot be convert to a float\n";
-        looping ()
-    | Some f ->
-        animate_beta ~low:15. ~high:f 30 "orthogonal" 0. 50 1.5;
-        looping () *)
-
-(* do something here, probably update internal values and redraw the ascii images *)
-(* in looping () *)
 
 (* command line argument parsing *)
 let command =

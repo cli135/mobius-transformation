@@ -1,7 +1,3 @@
-(*
-Should we remove underline underscore in Ascii_printer filename and library name
-*)
-
 (* open Core *)
 (* open Bimage *)
 
