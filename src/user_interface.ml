@@ -279,6 +279,18 @@ and parse_command_strings_in_loop (s : string) =
   (* this part could be refactored to do a Some/None monad I think
      since it involves nested pattern matching cases on Some and None, with
      early exits for None, just a guess *)
+  let set_command ref_variable (variable_name : string) cast_opt (variable_type_string : string) paramvalue =
+    match cast_opt paramvalue with
+      | Some i ->
+        ref_variable := i;
+          Out_channel.output_string stdout (variable_name ^ " updated to " ^ paramvalue);
+          looping ()
+      | _ ->
+          Out_channel.output_string stdout
+            ("one of the values entered cannot be convert to the proper data type\n\
+             they should be " ^ variable_type_string ^ "\n");
+          looping ()
+  in
   match tokens_in_command_string with
   | [ "alpha"; low; high; framerate; duration ] -> (
       match
@@ -382,77 +394,18 @@ and parse_command_strings_in_loop (s : string) =
             "one of the values entered cannot be convert to the proper data type\n\
              they should be float float float\n";
           looping ())
-  | [ "set"; "img_w"; paramvalue ] -> (
-      match int_of_string_opt paramvalue with
-      | Some i ->
-          current_img_w := i;
-          Out_channel.output_string stdout
-            ("img_w updated to " ^ paramvalue ^ "\n");
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be int\n";
-          looping ())
-  | [ "set"; "view_size"; paramvalue ] -> (
-      match int_of_string_opt paramvalue with
-      | Some i ->
-          current_view_size := i;
-          Out_channel.output_string stdout ("view_size updated to " ^ paramvalue);
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be int\n";
-          looping ())
-  | [ "set"; "plane_bd"; paramvalue ] -> (
-      match int_of_string_opt paramvalue with
-      | Some i ->
-          current_plane_bd := i;
-          Out_channel.output_string stdout
-            ("plane_bd updated to " ^ paramvalue ^ "\n");
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be int\n";
-          looping ())
-  | [ "set"; "half_edge_length"; paramvalue ] -> (
-      match int_of_string_opt paramvalue with
-      | Some i ->
-          current_half_edge_length := i;
-          Out_channel.output_string stdout
-            ("half_edge_length updated to " ^ paramvalue ^ "\n");
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be int\n";
-          looping ())
-  | [ "set"; "grid_size"; paramvalue ] -> (
-      match int_of_string_opt paramvalue with
-      | Some i ->
-          current_grid_size := i;
-          Out_channel.output_string stdout
-            ("grid_size updated to " ^ paramvalue ^ "\n");
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be int\n";
-          looping ())
-  | [ "set"; "line_w"; paramvalue ] -> (
-      match float_of_string_opt paramvalue with
-      | Some f ->
-          current_line_w := f;
-          Out_channel.output_string stdout
-            ("line_w updated to " ^ paramvalue ^ "\n");
-          looping ()
-      | _ ->
-          Out_channel.output_string stdout
-            "one of the values entered cannot be convert to the proper data type\n\
-             they should be float\n";
-          looping ())
+  | [ "set"; "img_w"; paramvalue ] -> 
+    set_command current_img_w "img_w" int_of_string_opt "int" paramvalue    
+  | [ "set"; "view_size"; paramvalue ] ->
+    set_command current_view_size "view_size" int_of_string_opt "int" paramvalue    
+  | [ "set"; "plane_bd"; paramvalue ] -> 
+    set_command current_plane_bd "plane_bd" int_of_string_opt "int" paramvalue    
+  | [ "set"; "half_edge_length"; paramvalue ] -> 
+    set_command current_half_edge_length "half_edge_length" int_of_string_opt "int" paramvalue    
+  | [ "set"; "grid_size"; paramvalue ] -> 
+    set_command current_grid_size "grid_size" int_of_string_opt "int" paramvalue    
+  | [ "set"; "line_w"; paramvalue ] -> 
+    set_command current_line_w "line_w" float_of_string_opt "float" paramvalue
   | _ ->
       Out_channel.output_string stdout
         "the command is not one of the possible commands: alpha, beta, change view \
