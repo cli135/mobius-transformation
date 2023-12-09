@@ -14,3 +14,5 @@ Dependencies/Libraries used:
 - `Imagelib`
  
 Our Project Proposal PDF is in the file named '`Project Design Proposal.pdf`' or a similar name, in the root directory.
+
+Our Code Checkpoint README PDF is in the file named '`Code Checkpoint README - Moebius Transformation in ASCII Art.pdf`' or a similar name, in the root directory.
