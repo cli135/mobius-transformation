@@ -5,32 +5,36 @@ open Math
 open Rasterizer
 open Ascii_printer
 
-(*
-   How to run the user interface:
+let helper_page =
+  "\n\
+  \  How to use the user interface:\n\n\
+  \  set [alpha/beta] [angle] : set alpha/beta to the input angle in degree\n\
+  \    set alpha 90\n\
+  \    set beta 180\n\n\
+  \  add [alpha/beta] [angle] : increment current alpha/beta by the input \
+   angle in degree \n\
+  \    add alpha 15\n\
+  \    add beta -10\n\n\
+  \  view [Sphere/Planar/Orthogonal] : change render views\n\
+  \    view Sphere\n\n\
+  \  set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new \
+   location, zfloat must be a positive value.\n\
+  \    move center 0. 1. 3.\n\n\
+  \  set [paramname] [paramvalue] : set all the customizable \
+   parameters for the viewport\n\
+  \    set img_w 100\n\
+  \    set view_size 4\n\
+  \    set plane_bd 4\n\
+  \    set half_edge_length 2\n\
+  \    set line_w 0.25\n\
+  \    set grid_size 2\n\
+  \    set frame_rate 30\n\
+  \    set duration 2.\n\n\
+  \  cool : this will play a cool animation :)\n\n\
+  \  reset: reset all parameters\n\n\
+  \  exit: exit the program\n"
 
-   set [alpha/beta] [angle] 
-    set alpha 90
-    set beta 180
-
-   add [alpha/beta] [angle] 
-     add alpha 15
-     add beta -10
-
-   view [Sphere/Planar/Orthogonal]
-    view Sphere
-
-   move center [xfloat] [yfloat] [zfloat]
-     move center 0. 1. 3.
-
-   set [paramname] [paramvalueintorfloat?]
-     set img_w 100
-     set view_size 4
-     set plane_bd 4
-     set half_edge_length 2
-     set line_w 0.25
-     set grid_size 2
-*)
-
+(* Todo: add explanation for set  *)
 (* mutable state references for parameters the user can change *)
 let current_alpha = ref (Degree.of_float 0.0)
 let current_beta = ref (Degree.of_float 0.0)
@@ -54,7 +58,7 @@ let redraw render_mode alpha beta center : unit =
           ~plane_bd:!current_plane_bd
           ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
           ~grid_size:!current_grid_size Planar ~alpha ~beta
-          ~center:!current_center
+          ~center
       in
       let () = print_ascii_image img !current_img_w in
       ()
@@ -64,7 +68,7 @@ let redraw render_mode alpha beta center : unit =
           ~plane_bd:!current_plane_bd
           ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
           ~grid_size:!current_grid_size Sphere ~alpha ~beta
-          ~center:!current_center
+          ~center
       in
       let () = print_ascii_image img !current_img_w in
       ()
@@ -202,6 +206,7 @@ let cool_animation =
       keyframe_list_arc 30 3. true;
     ]
 
+(* parsing input commands *)
 let get_render_mode s =
   match String.lowercase s with
   | "orthogonal" -> Some Orthogonal
@@ -229,7 +234,11 @@ let rec looping () =
       current_frame_rate := 30;
       current_duration := 1.5;
       Out_channel.output_string stdout "reset all parameters\n";
-      redraw !current_render_mode !current_alpha !current_beta !current_center
+      redraw !current_render_mode !current_alpha !current_beta !current_center;
+      looping ()
+  | Some "help" ->
+      Out_channel.output_string stdout helper_page;
+      looping ()
   | Some "cool" ->
       show_animation !current_render_mode !current_frame_rate cool_animation;
       looping ()
@@ -264,9 +273,6 @@ and parse_command_strings_in_loop (s : string) =
   | [ "set"; "alpha"; final_value ] -> (
       match float_of_string_opt final_value with
       | Some d ->
-          (* add mutable state for the display type, center, and current alpha and beta stored low
-              starting points. Also add state for all of the ones in set img_w 100 or related parameters
-          *)
           let new_alpha = Degree.of_float d in
           generate_keyframes
             {
@@ -291,9 +297,6 @@ and parse_command_strings_in_loop (s : string) =
   | [ "add"; "alpha"; additional_alpha ] -> (
       match float_of_string_opt additional_alpha with
       | Some add_v ->
-          (* add mutable state for the display type, center, and current alpha and beta stored low
-              starting points. Also add state for all of the ones in set img_w 100 or related parameters
-          *)
           let new_alpha = Degree.( + ) !current_alpha (Degree.of_float add_v) in
           generate_keyframes
             {
@@ -317,9 +320,6 @@ and parse_command_strings_in_loop (s : string) =
   | [ "set"; "beta"; final_value ] -> (
       match float_of_string_opt final_value with
       | Some d ->
-          (* add mutable state for the display type, center, and current alpha and beta stored low
-              starting points. Also add state for all of the ones in set img_w 100 or related parameters
-          *)
           let new_beta = Degree.of_float d in
           generate_keyframes
             {
@@ -344,9 +344,6 @@ and parse_command_strings_in_loop (s : string) =
   | [ "add"; "beta"; additional_alpha ] -> (
       match float_of_string_opt additional_alpha with
       | Some add_v ->
-          (* add mutable state for the display type, center, and current alpha and beta stored low
-              starting points. Also add state for all of the ones in set img_w 100 or related parameters
-          *)
           let new_beta = Degree.( + ) !current_alpha (Degree.of_float add_v) in
           generate_keyframes
             {
@@ -430,8 +427,13 @@ and parse_command_strings_in_loop (s : string) =
         paramvalue
   | [ "set"; "line_w"; paramvalue ] ->
       set_command current_line_w "line_w" float_of_string_opt "float" paramvalue
+  | [ "set"; "frame_rate"; paramvalue ] ->
+      set_command current_frame_rate "frame_rate" int_of_string_opt "int" paramvalue
+  | [ "set"; "duration"; paramvalue ] ->
+      set_command current_line_w "duration" float_of_string_opt "float" paramvalue
   | _ ->
-      Out_channel.output_string stdout "unrecognized command\n";
+      Out_channel.output_string stdout
+        "unrecognized command, type help to see the user manual\n";
       looping ()
 
 (* the actual main method of the program where the program begins running *)

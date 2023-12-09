@@ -123,7 +123,7 @@ let invSProj v2 ~z_c =
   else failwith "stereoProj: zc should not be a negative value"
 
 (* this part construct the mapping functions for sampling *)
-(* step 1. invSProj (X,Y) -> global (x1, y1, z1) on S2 centered at (0,0,z_c) -> local (x1_, y1_, z1_) on S2 *)
+(* step 1. invSProj (X,Y) -> global (x1, y1, z1) on S2 centered at (x_c, y_c, z_c) -> local (x1_, y1_, z1_) on S2 *)
 let map2localS2 center v2 =
   let x_c = Vec3.nth center 0
   and y_c = Vec3.nth center 1
