@@ -340,10 +340,10 @@ and parse_command_strings_in_loop (s : string) =
             "The values entered cannot be convert to the float type\n";
           looping ())
   (* this is just one additional value to add to to alpha *)
-  | [ "add"; "beta"; additional_alpha ] -> (
-      match float_of_string_opt additional_alpha with
+  | [ "add"; "beta"; additional_beta ] -> (
+      match float_of_string_opt additional_beta with
       | Some add_v ->
-          let new_beta = Degree.( + ) !current_alpha (Degree.of_float add_v) in
+          let new_beta = Degree.( + ) !current_beta (Degree.of_float add_v) in
           generate_keyframes
             {
               alpha = !current_alpha;
