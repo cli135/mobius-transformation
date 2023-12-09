@@ -1,3 +1,5 @@
 /_build
 bisect*
 _coverage/*
+*.png
+*Zone.Identifier
