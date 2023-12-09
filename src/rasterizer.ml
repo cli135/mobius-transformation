@@ -162,7 +162,7 @@ let super_sampling_points c ij =
 let getImage ?(camera_offset = 1.)
     ?(view_direction = Vec3.of_list [ 1.; -1.; 1. ]) ?(img_w = 100)
     ?(view_size = 8) ?(plane_bd = 4) ?(half_edge_length = 1) ?(line_w = 0.1)
-    ?(grid_size = 4) ?(sampling_n = 4) mode ~alpha ~beta ~center =
+    ?(grid_size = 4) ?(sampling_n = 1) mode ~alpha ~beta ~center =
   let indices =
     cartesianProduct (List.range 0 img_w) (List.range 0 img_w)
     |> List.map ~f:(super_sampling_points sampling_n)
