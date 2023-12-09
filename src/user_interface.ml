@@ -20,8 +20,8 @@ let helper_page =
   \  set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new \
    location, zfloat must be a positive value.\n\
   \    move center 0. 1. 3.\n\n\
-  \  set [paramname] [paramvalue] : set all the customizable \
-   parameters for the viewport\n\
+  \  set [paramname] [paramvalue] : set all the customizable parameters for \
+   the viewport\n\
   \    set img_w 100\n\
   \    set view_size 4\n\
   \    set plane_bd 4\n\
@@ -57,8 +57,7 @@ let redraw render_mode alpha beta center : unit =
         getImage ~img_w:!current_img_w ~view_size:!current_view_size
           ~plane_bd:!current_plane_bd
           ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
-          ~grid_size:!current_grid_size Planar ~alpha ~beta
-          ~center
+          ~grid_size:!current_grid_size Planar ~alpha ~beta ~center
       in
       let () = print_ascii_image img !current_img_w in
       ()
@@ -67,8 +66,7 @@ let redraw render_mode alpha beta center : unit =
         getImage ~img_w:!current_img_w ~view_size:!current_view_size
           ~plane_bd:!current_plane_bd
           ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
-          ~grid_size:!current_grid_size Sphere ~alpha ~beta
-          ~center
+          ~grid_size:!current_grid_size Sphere ~alpha ~beta ~center
       in
       let () = print_ascii_image img !current_img_w in
       ()
@@ -154,7 +152,7 @@ let keyframe_list_arc ?(r = 2.) frame_rate duration change_angle =
 let cool_animation =
   List.concat
     [
-      keyframe_list_arc 30 1.5 false;
+      keyframe_list_arc !current_frame_rate !current_duration false;
       generate_keyframes
         {
           alpha = Degree.of_float 0.;
@@ -166,7 +164,7 @@ let cool_animation =
           beta = Degree.of_float 0.;
           center = Vec3.of_list [ 0.; 0.; 1. ];
         }
-        30 1.2 linear_interpolate;
+        !current_frame_rate (!current_duration *. 0.8) linear_interpolate;
       generate_keyframes
         {
           alpha = Degree.of_float 0.;
@@ -178,7 +176,7 @@ let cool_animation =
           beta = Degree.of_float 0.;
           center = Vec3.of_list [ 0.; 0.; 4. ];
         }
-        30 0.5 linear_interpolate;
+        !current_frame_rate (!current_duration *. 0.4) linear_interpolate;
       generate_keyframes
         {
           alpha = Degree.of_float 0.;
@@ -190,7 +188,7 @@ let cool_animation =
           beta = Degree.of_float 0.;
           center = Vec3.of_list [ 0.; 0.; 1.5 ];
         }
-        30 0.5 linear_interpolate;
+        !current_frame_rate (!current_duration *. 0.4) linear_interpolate;
       generate_keyframes
         {
           alpha = Degree.of_float 0.;
@@ -202,8 +200,8 @@ let cool_animation =
           beta = Degree.of_float 360.;
           center = Vec3.of_list [ 0.; 0.; 1.5 ];
         }
-        30 1.5 linear_interpolate;
-      keyframe_list_arc 30 3. true;
+        !current_frame_rate !current_duration linear_interpolate;
+      keyframe_list_arc !current_frame_rate (!current_duration *. 2.) true;
     ]
 
 (* parsing input commands *)
@@ -240,6 +238,7 @@ let rec looping () =
       Out_channel.output_string stdout helper_page;
       looping ()
   | Some "cool" ->
+      (* the frames in this animation is fixed. If the user wants to play it slower they need to decrease the framerate *)
       show_animation !current_render_mode !current_frame_rate cool_animation;
       looping ()
   | Some s -> (
@@ -428,9 +427,11 @@ and parse_command_strings_in_loop (s : string) =
   | [ "set"; "line_w"; paramvalue ] ->
       set_command current_line_w "line_w" float_of_string_opt "float" paramvalue
   | [ "set"; "frame_rate"; paramvalue ] ->
-      set_command current_frame_rate "frame_rate" int_of_string_opt "int" paramvalue
+      set_command current_frame_rate "frame_rate" int_of_string_opt "int"
+        paramvalue
   | [ "set"; "duration"; paramvalue ] ->
-      set_command current_line_w "duration" float_of_string_opt "float" paramvalue
+      set_command current_duration "duration" float_of_string_opt "float"
+        paramvalue
   | _ ->
       Out_channel.output_string stdout
         "unrecognized command, type help to see the user manual\n";
