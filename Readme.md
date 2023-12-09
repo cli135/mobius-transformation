@@ -9,7 +9,6 @@ Christopher Li
 Dependencies/Libraries used:
 
 - `Core`
-- `Lwt`
 - `OUnit2`
 - `Imagelib`
  
