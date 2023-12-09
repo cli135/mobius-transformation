@@ -43,11 +43,29 @@
     stdio
     core_unix
     core_unix.sys_unix
+    imagelib
+    imagelib.unix
   )
   (preprocess
     (pps bisect_ppx ppx_jane)
   )
 )
+
+; (library
+;   (name print_ascii)
+;   (modules print_ascii)
+;   (libraries
+;     core
+;     stdio
+;     core_unix
+;     core_unix.sys_unix
+;     imagelib
+;     imagelib.unix
+;   )
+;   (preprocess
+;     (pps bisect_ppx ppx_jane)
+;   )
+; )
 
 (executable
   (name user_interface)
@@ -67,6 +85,25 @@
   )
 )
 
+(executable
+  (name print_ascii)
+  (modules print_ascii)
+  (libraries
+    core
+    stdio
+    core_unix
+    core_unix.sys_unix
+    core_unix.command_unix
+    math
+    rasterizer
+    ascii_printer
+    imagelib
+    imagelib.unix
+  )
+  (preprocess
+    (pps bisect_ppx ppx_jane)
+  )
+)
 
 ; (executable
 ;   (name moebius)
