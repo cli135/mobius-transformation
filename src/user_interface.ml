@@ -24,22 +24,10 @@ let get_render_mode s =
    }
 
    end *)
-(* Todo: add explanation for set  *)
-(* mutable state references for parameters the user can change *)
-(* let current_alpha = ref (Degree.of_float 0.0)
-   let current_beta = ref (Degree.of_float 0.0)
-   let current_render_mode = ref Orthogonal
-   let current_center = ref (Vec3.of_list [ 0.; 0.; 1. ])
-   let current_img_w = ref 50
-   let current_view_size = ref 4
-   let current_plane_bd = ref 4
-   let current_half_edge_length = ref 2
-   let current_line_w = ref 0.25
-   let current_grid_size = ref 2
-   let current_frame_rate = ref 30
-   let current_duration = ref 1.5 *)
+
 
 module Params = struct
+  (* mutable state references for parameters the user can change *)
   (* initialize mutable references with defaults, will change later based on what is
      loaded in from config.json *)
   let current_alpha = ref (Degree.of_float 0.0)

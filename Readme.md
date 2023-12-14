@@ -1,10 +1,12 @@
 Final Project - FPSE - Moebius Transformation in ASCII Art
 --------------------------------
 
+![Moebius Transformation Image Screenshot](images/moebius-presentation-screenshot.png)
+
 
 Authors:
 - Hongyi Liu,
--Christopher Li
+- Christopher Li
 
 ## Dependencies/Libraries used:
 

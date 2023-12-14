@@ -9,7 +9,7 @@ let print_ascii_image (image : float list) (image_width : int) : unit =
                           ~init:(1.)
                           image
   in
-  (* the below is based on 200x200 *)
+  (* the below is rendering the images *)
   (List.iteri
     image
     ~f:(fun idx elt ->
