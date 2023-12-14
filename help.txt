@@ -21,6 +21,7 @@ the viewport
   set grid_size 2
   set frame_rate 30
   set duration 2.
+  set supersampling true
 cool : this will play a cool animation :)
 reset: reset all parameters
 exit: exit the program

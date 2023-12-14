@@ -11,6 +11,11 @@ Authors:
 - `Core`
 - `OUnit2`
 - `Imagelib`
+  - This library has been tested and is working now, with the functionality displayed below! Namely, we can read from PNG files, displaying them as ASCII art, and we can write to PNG files, displaying them the rasterizer output as normal PNG images (in print_ascii.ml)
+  - The results of reading from PNG files and rendering them as ASCII art is also shown below:
+  - (insert image here)
+
+- `Yojson`
 
 ## How to run the program / Usage:
 
@@ -22,35 +27,34 @@ You will then see an image displayed, with the option to enter commands interact
 
 How to use the user interface:
 ```
-  set [alpha/beta] [angle] : set alpha/beta to the input angle in degree
-	set alpha 90
-	set beta 180
+How to use the user interface:
+set [alpha/beta] [angle] : set alpha/beta to the input angle in degree
+  set alpha 90
+  set beta 180
+add [alpha/beta] [angle] : increment current alpha/beta by the input 
+angle in degree 
+  add alpha 15
+  add beta -10
+view [Sphere/Planar/Orthogonal] : change render views
+  view Sphere
+set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new 
+location, zfloat must be a positive value.
+  move center 0. 1. 3.
+set [paramname] [paramvalue] : set all the customizable parameters for 
+the viewport
+  set img_w 100
+  set view_size 4
+  set plane_bd 4
+  set half_edge_length 2
+  set line_w 0.25
+  set grid_size 2
+  set frame_rate 30
+  set duration 2.
+  set supersampling true
+cool : this will play a cool animation :)
+reset: reset all parameters
+exit: exit the program
 
-  add [alpha/beta] [angle] : increment current alpha/beta by the input angle in degree
-	add alpha 15
-	add beta -10
-
-  view [Sphere/Planar/Orthogonal] : change render views
-	view Sphere
-
-  set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new location, zfloat must be a positive value.
-	move center 0. 1. 3.
-
-  set [paramname] [paramvalue] : set all the customizable parameters for the viewport
-	set img_w 100
-	set view_size 4
-	set plane_bd 4
-	set half_edge_length 2
-	set line_w 0.25
-	set grid_size 2
-	set frame_rate 30
-	set duration 2.
-
-  cool : this will play a cool animation :)
-
-  reset: reset all parameters
-
-  exit: exit the program
 ```
 
 ## Overview:
@@ -72,26 +76,6 @@ How to use the user interface:
   - refactored some of the user interface options
   - refactored ascii_printer.ml to be cleaner
   - wrote functions to read from and write to PNG files using the imagelib library
-
-
-## Dependencies
-
-A list of libraries we are using:
-
-- Core
-- OUnit2
-- Imagelib
-  - This library has been tested and is working now, with the functionality displayed below! Namely, we can read from PNG files, displaying them as ASCII art, and we can write to PNG files, displaying them the rasterizer output as normal PNG images (in print_ascii.ml)
-  - The results of writing to PNG files are shown below:
-
-
-
-And the results of reading from PNG files and rendering them as ASCII art is also shown below:
-
-
-
-
-
 
 
 ## Summary of Codebase in `mobius-transformation/src`:

@@ -1,5 +1,3 @@
-(* Intentionally left empty until your implementation *)
-
 open Core
 open Math
 open Rasterizer
@@ -9,6 +7,14 @@ open Yojson.Basic.Util
 
 let helper_page_filename = "help.txt"
 let helper_page = Stdio.In_channel.read_all helper_page_filename
+
+(* parsing input commands *)
+let get_render_mode s =
+  match String.lowercase s with
+  | "orthogonal" -> Some Orthogonal
+  | "planar" -> Some Planar
+  | "sphere" -> Some Sphere
+  | _ -> None
 
 (* struct params{
      frames:...
@@ -34,7 +40,7 @@ let helper_page = Stdio.In_channel.read_all helper_page_filename
    let current_duration = ref 1.5 *)
 
 module Params = struct
-  (* init with defaults, will change later based on what is
+  (* initialize mutable references with defaults, will change later based on what is
      loaded in from config.json *)
   let current_alpha = ref (Degree.of_float 0.0)
   let current_beta = ref (Degree.of_float 0.0)
@@ -55,15 +61,15 @@ module Params = struct
   let json = Yojson.Basic.from_file config_filename
 
   (* functions *)
+  (* called when the program (i.e. this module) loads and when the 'reset' command is typed *)
   let load_default_param : unit =
     current_alpha := Degree.of_float (json |> member "default_alpha" |> to_float);
     current_beta := Degree.of_float (json |> member "default_beta" |> to_float);
     (current_render_mode :=
-       json |> member "default_render_mode" |> to_string |> function
-       | "Orthogonal" -> Orthogonal
-       | "Planar" -> Planar
-       | "Sphere" -> Sphere
-       | _ ->
+       json |> member "default_render_mode" |> to_string |> get_render_mode
+       |> function
+       | Some s -> s
+       | None ->
            Out_channel.output_string stdout
              "Must be one of Orthogonal, Planar, or Sphere; defaulting to \
               Orthogonal";
@@ -82,7 +88,22 @@ module Params = struct
     current_duration := json |> member "default_duration" |> to_float;
     current_supersampling := json |> member "default_supersampling" |> to_bool;
     Out_channel.output_string stdout "reset all parameters\n"
-  (* let set_params = failwith "unimplemented" *)
+
+  (* sets parameters when set commands are called by the user *)
+  let set_param ref_variable (variable_name : string) cast_opt
+      (variable_type_string : string) paramvalue redraw looping =
+    match cast_opt paramvalue with
+    | Some i ->
+        ref_variable := i;
+        Out_channel.output_string stdout
+          (variable_name ^ " updated to " ^ paramvalue ^ "\n");
+        redraw !current_render_mode !current_alpha !current_beta !current_center;
+        looping ()
+    | _ ->
+        Out_channel.output_string stdout
+          ("one of the values entered cannot be convert to the proper data type\n\
+            they should be " ^ variable_type_string ^ "\n");
+        looping ()
 end
 
 (* these parameters are here mainly for doing animation easily *)
@@ -137,14 +158,6 @@ let show_animation render_mode frame_rate keyframes_list =
 let cool_animation =
   get_cool_animation !Params.current_frame_rate !Params.current_duration
 
-(* parsing input commands *)
-let get_render_mode s =
-  match String.lowercase s with
-  | "orthogonal" -> Some Orthogonal
-  | "planar" -> Some Planar
-  | "sphere" -> Some Sphere
-  | _ -> None
-
 let rec looping () =
   Out_channel.output_string stdout "enter your command: \n";
   Out_channel.flush stdout;
@@ -174,26 +187,6 @@ and parse_command_strings_in_loop (s : string) =
   let tokens_in_command_string =
     String.split_on_chars s ~on:[ ' '; '\t'; '\n' ]
     |> List.filter ~f:(fun x -> String.(x <> ""))
-  in
-  (* this part could be refactored to do a Some/None monad I think
-     since it involves nested pattern matching cases on Some and None, with
-     early exits for None, just a guess *)
-  let set_command ref_variable (variable_name : string) cast_opt
-      (variable_type_string : string) paramvalue =
-    match cast_opt paramvalue with
-    | Some i ->
-        ref_variable := i;
-        Out_channel.output_string stdout
-          (variable_name ^ " updated to " ^ paramvalue ^ "\n");
-        redraw
-          !Params.current_render_mode
-          !Params.current_alpha !Params.current_beta !Params.current_center;
-        looping ()
-    | _ ->
-        Out_channel.output_string stdout
-          ("one of the values entered cannot be convert to the proper data type\n\
-            they should be " ^ variable_type_string ^ "\n");
-        looping ()
   in
   match tokens_in_command_string with
   | [ "set"; "alpha"; final_value ] -> (
@@ -359,29 +352,32 @@ and parse_command_strings_in_loop (s : string) =
              they should be float float float\n";
           looping ())
   | [ "set"; "img_w"; paramvalue ] ->
-      set_command Params.current_img_w "img_w" int_of_string_opt "int"
-        paramvalue
+      Params.set_param Params.current_img_w "img_w" int_of_string_opt "int"
+        paramvalue redraw looping
   | [ "set"; "view_size"; paramvalue ] ->
-      set_command Params.current_view_size "view_size" int_of_string_opt "int"
-        paramvalue
+      Params.set_param Params.current_view_size "view_size" int_of_string_opt
+        "int" paramvalue redraw looping
   | [ "set"; "plane_bd"; paramvalue ] ->
-      set_command Params.current_plane_bd "plane_bd" int_of_string_opt "int"
-        paramvalue
+      Params.set_param Params.current_plane_bd "plane_bd" int_of_string_opt
+        "int" paramvalue redraw looping
   | [ "set"; "half_edge_length"; paramvalue ] ->
-      set_command Params.current_half_edge_length "half_edge_length"
-        int_of_string_opt "int" paramvalue
+      Params.set_param Params.current_half_edge_length "half_edge_length"
+        int_of_string_opt "int" paramvalue redraw looping
   | [ "set"; "grid_size"; paramvalue ] ->
-      set_command Params.current_grid_size "grid_size" int_of_string_opt "int"
-        paramvalue
+      Params.set_param Params.current_grid_size "grid_size" int_of_string_opt
+        "int" paramvalue redraw looping
   | [ "set"; "line_w"; paramvalue ] ->
-      set_command Params.current_line_w "line_w" float_of_string_opt "float"
-        paramvalue
+      Params.set_param Params.current_line_w "line_w" float_of_string_opt
+        "float" paramvalue redraw looping
   | [ "set"; "frame_rate"; paramvalue ] ->
-      set_command Params.current_frame_rate "frame_rate" int_of_string_opt "int"
-        paramvalue
+      Params.set_param Params.current_frame_rate "frame_rate" int_of_string_opt
+        "int" paramvalue redraw looping
   | [ "set"; "duration"; paramvalue ] ->
-      set_command Params.current_duration "duration" float_of_string_opt "float"
-        paramvalue
+      Params.set_param Params.current_duration "duration" float_of_string_opt
+        "float" paramvalue redraw looping
+  | [ "set"; "supersampling"; paramvalue ] ->
+      Params.set_param Params.current_supersampling "supersampling"
+        bool_of_string_opt "bool" paramvalue redraw looping
   | _ ->
       Out_channel.output_string stdout
         "unrecognized command, type help to see the user manual\n";
