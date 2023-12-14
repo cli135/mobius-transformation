@@ -11,7 +11,7 @@ open OUnit2
 open Math
 open Rasterizer
 open Animation
-(* open Ascii_printer *)
+open Exposed_for_testing
 
 let v2a = Vec2.of_list [ 1.; 2. ]
 let v2b = Vec2.of_list [ -1.; 0.5 ]
