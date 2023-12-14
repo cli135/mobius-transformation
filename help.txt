@@ -12,21 +12,19 @@ angle in degree
 view [Sphere/Planar/Orthogonal] : change render views
   view Sphere
 
-set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new 
-location, zfloat must be a positive value.
+set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new location, zfloat must be a positive value.
   move center 0. 1. 3.
 
-set [paramname] [paramvalue] : set all the customizable parameters for 
-the viewport
-  set img_w 100 , this changes the ascii viewer width and height  
-  set view_size 4 , the camera view size, e.g., in planar view we sees the [-view_size, view_size] x [-view_size, view_size] area
-  set plane_bd 4 , the orthogonal view boudnary. This is to prevent the planer image occupies the whole orthogonal view 
-  set half_edge_length 2 , the length of grid. The grid sit in the [-half_edge_length, half_edge_length] x [-half_edge_length, half_edge_length] area
-  set line_w 0.25 , width of grid lines
-  set grid_size 2 , number of lines. We will have grid_size^2 cells and (grid_size+1) vertical/horizontal lines
-  set frame_rate 30 , the rate of animation playing per second
-  set duration 2. , the time each animation should plays when calling add/set
-  set supersampling true , whether to use the supersampling in the rasterizer
+set [paramname] [paramvalue] : set all the customizable parameters for the viewport
+  set img_w 100 ,           this changes the ascii viewer width and height  
+  set view_size 4 ,         the camera view size, e.g., in planar view we sees the [-view_size, view_size] x [-view_size, view_size] area
+  set plane_bd 4 ,          the orthogonal view boudnary. This is to prevent the planer image occupies the whole orthogonal view 
+  set half_edge_length 2 ,  the length of grid. The grid sit in the [-half_edge_length, half_edge_length] x [-half_edge_length, half_edge_length] area
+  set line_w 0.25 ,         width of grid lines
+  set grid_size 2 ,         number of lines. We will have grid_size^2 cells and (grid_size+1) vertical/horizontal lines
+  set frame_rate 30 ,       the rate of animation playing per second
+  set duration 2. ,         the time each animation should plays when calling add/set
+  set supersampling true ,  whether to use the supersampling in the rasterizer
 
 cool : this will play a cool animation :)
 

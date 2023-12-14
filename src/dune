@@ -7,9 +7,16 @@
 ; Date: 11-09-2023 (November 9, 2023)
 
 (library
+ (name ascii_printer)
+ (modules ascii_printer)
+ (libraries core stdio core_unix core_unix.sys_unix imagelib imagelib.unix)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
+
+(library
  (name rasterizer)
  (modules rasterizer)
- (libraries math core stdio core_unix core_unix.sys_unix)
+ (libraries math ascii_printer core stdio core_unix core_unix.sys_unix)
  (preprocess
   (pps bisect_ppx ppx_jane)))
 
@@ -17,13 +24,6 @@
  (name math)
  (modules math)
  (libraries core stdio core_unix core_unix.sys_unix)
- (preprocess
-  (pps bisect_ppx ppx_jane)))
-
-(library
- (name ascii_printer)
- (modules ascii_printer)
- (libraries core stdio core_unix core_unix.sys_unix imagelib imagelib.unix)
  (preprocess
   (pps bisect_ppx ppx_jane)))
 

@@ -44,13 +44,14 @@ module Params = struct
   let current_duration = ref 1.5
   let current_supersampling = ref false
 
-  (* json *)
-  let config_filename = "config.json"
-  let json = Yojson.Basic.from_file config_filename
+  
 
   (* functions *)
   (* called when the program (i.e. this module) loads and when the 'reset' command is typed *)
-  let load_default_param : unit =
+  let load_default_param () : unit =
+    (* json *)
+    let config_filename = "config.json" in
+    let json = Yojson.Basic.from_file config_filename in
     current_alpha := Degree.of_float (json |> member "default_alpha" |> to_float);
     current_beta := Degree.of_float (json |> member "default_beta" |> to_float);
     (current_render_mode :=
@@ -153,7 +154,7 @@ let rec looping () =
   | None -> looping ()
   | Some "exit" -> ()
   | Some "reset" ->
-      Params.load_default_param;
+      Params.load_default_param ();
       redraw
         !Params.current_render_mode
         !Params.current_alpha !Params.current_beta !Params.current_center;

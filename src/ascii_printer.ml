@@ -1,6 +1,20 @@
 open Core
 
-let print_ascii_image (image : float list) (image_width : int) : unit =
+module Gray_image = struct
+      (* let width =  
+      let height =  *)
+      type t = float list list
+      (* let make_list_grid (width : int) (height : int) : t = failwith "unimplemented" *)
+      let to_float_list (grid : t) : float list = List.concat grid
+      let of_float_list (float_list : float list) (width : int) : t =
+        if (List.length float_list) mod width <> 0 then
+          failwith "The length of the float list is not a multiple of the width, i.e. not rectangular image"
+        else
+          List.chunks_of float_list ~length:(width)
+end
+
+let print_ascii_image (gray_image : Gray_image.t) (image_width : int) : unit =
+  let image = Gray_image.to_float_list gray_image in 
   (* input is a grayscale list *)
   let image_width = image_width in
   (* change density here if needed *)
@@ -23,3 +37,16 @@ let print_ascii_image (image : float list) (image_width : int) : unit =
       print_string (String.make 1 ascii_val);
       if j = image_width - 1 then print_endline "" else print_string ""
     ))
+
+(* function to create a png image from the grayscale array given from rasterizer *)
+let create_png_image (gray_image : Gray_image.t) (image_width : int) (output_filename : string): unit =
+  let image = Gray_image.to_float_list gray_image in 
+  let png_img = Image.create_rgb image_width image_width in
+  let () = List.iteri ~f:(
+    fun (idx : int) elt ->
+      Image.write_grey png_img (idx mod image_width) (idx / image_width) (int_of_float (255. *. elt))
+  ) image
+  in
+  ImageLib_unix.writefile output_filename png_img 
+  
+(* function to load any png image into ascii art, like sampling that image *)

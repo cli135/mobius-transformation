@@ -1,5 +1,6 @@
 open Math
 open Core
+open Ascii_printer
 
 module Exposed_for_testing = struct
   (*
@@ -188,7 +189,7 @@ let getImage ?(camera_offset = 1.)
               sample_plane ~i ~j ~grid_size ~alpha:(Degree.to_radian alpha)
                 ~beta:(Degree.to_radian beta) ~center ~img_w ~view_size
                 ~half_edge_length ~line_w)
-          |> averaging)
+          |> averaging) |> Fn.flip Gray_image.of_float_list img_w
   | Sphere ->
       (* sample_sphere *)
       List.map indices ~f:(fun ij_list ->
@@ -196,7 +197,7 @@ let getImage ?(camera_offset = 1.)
               sample_sphere ~i ~j ~grid_size ~directions
                 ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta)
                 ~img_w ~half_edge_length ~line_w)
-          |> averaging)
+          |> averaging) |> Fn.flip Gray_image.of_float_list img_w
   | Orthogonal ->
       (* sample orthogonal *)
       List.map indices ~f:(fun ij_list ->
@@ -204,4 +205,4 @@ let getImage ?(camera_offset = 1.)
               sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions
                 ~alpha:(Degree.to_radian alpha) ~beta:(Degree.to_radian beta)
                 ~center ~img_w ~view_size ~half_edge_length ~plane_bd ~line_w)
-          |> averaging)
+          |> averaging) |> Fn.flip Gray_image.of_float_list img_w

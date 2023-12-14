@@ -1,21 +1,8 @@
-(* open Image *)
-(* open ImageLib_unix *)
 open Core
 open Rasterizer
 open Math
 open Ascii_printer
 
-(* function to create a png image from the grayscale array given from rasterizer *)
-let create_png_image (image : float list) (image_width : int) (output_filename : string): unit =
-  let png_img = Image.create_rgb image_width image_width in
-  let () = List.iteri ~f:(
-    fun (idx : int) elt ->
-      Image.write_grey png_img (idx mod image_width) (idx / image_width) (int_of_float (255. *. elt))
-  ) image
-  in
-  ImageLib_unix.writefile output_filename png_img 
-  
-(* function to load any png image into ascii art, like sampling that image *)
 
 (* main method *)
 let () =
@@ -72,7 +59,7 @@ let rec looping () =
         )
         |> List.map ~f:(fun x -> float_of_int x)
       in
-      let () = print_ascii_image float_list image_width
+      let () = print_ascii_image (Gray_image.of_float_list float_list image_width) image_width
       in 
       looping ()
     | None ->

@@ -11,6 +11,7 @@ open OUnit2
 open Math
 open Rasterizer
 open Animation
+open Ascii_printer
 open Exposed_for_testing
 
 let v2a = Vec2.of_list [ 1.; 2. ]
@@ -19,7 +20,7 @@ let v2c = Vec2.of_list [ 233.; -0.7 ]
 let v3a = Vec3.of_list [ 1.; 2.; 2.0 ]
 let v3b = Vec3.of_list [ -1.; 0.5; 0.2 ]
 let v3c = Vec3.of_list [ -0.23; 1.34; 43. ]
-let float_equal f1 f2 = Float.( (Float.abs (f1 -. f2)) < 0.00000001)
+let float_equal f1 f2 = Float.(Float.abs (f1 -. f2) < 0.00000001)
 let float_list_equal lf1 lf2 = List.for_all2_exn lf1 lf2 ~f:float_equal
 
 let vec_tests_ _ =
@@ -184,6 +185,7 @@ let image_tests _ =
         ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Planar
         ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> Gray_image.to_float_list
      |> different_pixels_less_than_n 5 plane_result);
   (* I think the descrepency of the sphere test is because of the floating point issue
      It only happens and the boundary point when I look at the result, so we should be fine *)
@@ -192,12 +194,14 @@ let image_tests _ =
         ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Sphere
         ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> Gray_image.to_float_list
      |> different_pixels_less_than_n 5 sphere_result);
   assert_equal true
   @@ (getImage ~img_w:10 ~view_size:4 ~plane_bd:4 ~half_edge_length:2
         ~line_w:0.25 ~grid_size:2 ~sampling_n:1 Orthogonal
         ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
         ~center:(Vec3.of_list [ 0.; 0.; 1. ])
+     |> Gray_image.to_float_list
      |> different_pixels_less_than_n 5 orthogonal_result)
 
 let rasterizer_tests =
@@ -259,8 +263,8 @@ let basic_animation_tests _ =
   assert_equal k2 @@ linear_interpolate k1 k2 1.;
   (* This is dangerous and might be good to use floating point comparison but seems working fine*)
   assert_equal k3 @@ linear_interpolate k1 k2 0.5;
-  assert_equal [k1;k3;k2] @@ generate_keyframes k1 k2 2 1. linear_interpolate
-
+  assert_equal [ k1; k3; k2 ]
+  @@ generate_keyframes k1 k2 2 1. linear_interpolate
 
 let animation_tests =
   "animation tests" >::: [ "animation test" >:: basic_animation_tests ]

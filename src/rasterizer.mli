@@ -1,5 +1,6 @@
 (* This part is responsible for doing all the rastering work that are gonna be used in the ascii printer  *)
 open Math
+open Ascii_printer
 
 (*
      The user are only supposed to use the last function,
@@ -123,4 +124,4 @@ val getImage :
   (* rotation along y axis in degree *)
   center:Vec3.t ->
   (* center of the sphere *)
-  float list
+  Gray_image.t
