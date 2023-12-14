@@ -1,0 +1,27 @@
+How to use the user interface:
+set [alpha/beta] [angle] : set alpha/beta to the input angle in degree
+  set alpha 90
+  set beta 180
+add [alpha/beta] [angle] : increment current alpha/beta by the input 
+angle in degree 
+  add alpha 15
+  add beta -10
+view [Sphere/Planar/Orthogonal] : change render views
+  view Sphere
+set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new 
+location, zfloat must be a positive value.
+  move center 0. 1. 3.
+set [paramname] [paramvalue] : set all the customizable parameters for 
+the viewport
+  set img_w 100
+  set view_size 4
+  set plane_bd 4
+  set half_edge_length 2
+  set line_w 0.25
+  set grid_size 2
+  set frame_rate 30
+  set duration 2.
+cool : this will play a cool animation :)
+reset: reset all parameters
+exit: exit the program
+

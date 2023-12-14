@@ -1,0 +1,15 @@
+{
+"default_alpha" : 0.0,
+"default_beta" : 0.0,
+"default_render_mode" : "Orthogonal",
+"default_center" : [ 0.0, 0.0, 1.0 ],
+"default_img_w" : 50,
+"default_view_size" : 4,
+"default_plane_bd" : 4,
+"default_half_edge_length" : 2,
+"default_line_w" : 0.25,
+"default_grid_size" : 2,
+"default_frame_rate" : 30,
+"default_duration" : 1.5,
+"default_supersampling" : false
+}

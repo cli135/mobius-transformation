@@ -5,83 +5,125 @@ open Math
 open Rasterizer
 open Ascii_printer
 open Animation
+open Yojson.Basic.Util
 
-let helper_page =
-  "\n\
-  \  How to use the user interface:\n\n\
-  \  set [alpha/beta] [angle] : set alpha/beta to the input angle in degree\n\
-  \    set alpha 90\n\
-  \    set beta 180\n\n\
-  \  add [alpha/beta] [angle] : increment current alpha/beta by the input \
-   angle in degree \n\
-  \    add alpha 15\n\
-  \    add beta -10\n\n\
-  \  view [Sphere/Planar/Orthogonal] : change render views\n\
-  \    view Sphere\n\n\
-  \  set center [xfloat] [yfloat] [zfloat] : set the sphere center to a new \
-   location, zfloat must be a positive value.\n\
-  \    move center 0. 1. 3.\n\n\
-  \  set [paramname] [paramvalue] : set all the customizable parameters for \
-   the viewport\n\
-  \    set img_w 100\n\
-  \    set view_size 4\n\
-  \    set plane_bd 4\n\
-  \    set half_edge_length 2\n\
-  \    set line_w 0.25\n\
-  \    set grid_size 2\n\
-  \    set frame_rate 30\n\
-  \    set duration 2.\n\n\
-  \  cool : this will play a cool animation :)\n\n\
-  \  reset: reset all parameters\n\n\
-  \  exit: exit the program\n"
+let helper_page_filename = "help.txt"
+let helper_page = Stdio.In_channel.read_all helper_page_filename
 
+(* struct params{
+     frames:...
+
+     val load_default_param
+     val set_params:
+   }
+
+   end *)
 (* Todo: add explanation for set  *)
 (* mutable state references for parameters the user can change *)
-let current_alpha = ref (Degree.of_float 0.0)
-let current_beta = ref (Degree.of_float 0.0)
-let current_render_mode = ref Orthogonal
-let current_center = ref (Vec3.of_list [ 0.; 0.; 1. ])
-let current_img_w = ref 50
-let current_view_size = ref 4
-let current_plane_bd = ref 4
-let current_half_edge_length = ref 2
-let current_line_w = ref 0.25
-let current_grid_size = ref 2
-let current_frame_rate = ref 30
-let current_duration = ref 1.5
+(* let current_alpha = ref (Degree.of_float 0.0)
+   let current_beta = ref (Degree.of_float 0.0)
+   let current_render_mode = ref Orthogonal
+   let current_center = ref (Vec3.of_list [ 0.; 0.; 1. ])
+   let current_img_w = ref 50
+   let current_view_size = ref 4
+   let current_plane_bd = ref 4
+   let current_half_edge_length = ref 2
+   let current_line_w = ref 0.25
+   let current_grid_size = ref 2
+   let current_frame_rate = ref 30
+   let current_duration = ref 1.5 *)
+
+module Params = struct
+  (* init with defaults, will change later based on what is
+     loaded in from config.json *)
+  let current_alpha = ref (Degree.of_float 0.0)
+  let current_beta = ref (Degree.of_float 0.0)
+  let current_render_mode = ref Orthogonal
+  let current_center = ref (Vec3.of_list [ 0.; 0.; 1. ])
+  let current_img_w = ref 50
+  let current_view_size = ref 4
+  let current_plane_bd = ref 4
+  let current_half_edge_length = ref 2
+  let current_line_w = ref 0.25
+  let current_grid_size = ref 2
+  let current_frame_rate = ref 30
+  let current_duration = ref 1.5
+  let current_supersampling = ref false
+
+  (* json *)
+  let config_filename = "config.json"
+  let json = Yojson.Basic.from_file config_filename
+
+  (* functions *)
+  let load_default_param : unit =
+    current_alpha := Degree.of_float (json |> member "default_alpha" |> to_float);
+    current_beta := Degree.of_float (json |> member "default_beta" |> to_float);
+    (current_render_mode :=
+       json |> member "default_render_mode" |> to_string |> function
+       | "Orthogonal" -> Orthogonal
+       | "Planar" -> Planar
+       | "Sphere" -> Sphere
+       | _ ->
+           Out_channel.output_string stdout
+             "Must be one of Orthogonal, Planar, or Sphere; defaulting to \
+              Orthogonal";
+           Orthogonal);
+    current_center :=
+      Vec3.of_list
+        (json |> member "default_center" |> to_list |> List.map ~f:to_float);
+    current_img_w := json |> member "default_img_w" |> to_int;
+    current_view_size := json |> member "default_view_size" |> to_int;
+    current_plane_bd := json |> member "default_plane_bd" |> to_int;
+    current_half_edge_length :=
+      json |> member "default_half_edge_length" |> to_int;
+    current_line_w := json |> member "default_line_w" |> to_float;
+    current_grid_size := json |> member "default_grid_size" |> to_int;
+    current_frame_rate := json |> member "default_frame_rate" |> to_int;
+    current_duration := json |> member "default_duration" |> to_float;
+    current_supersampling := json |> member "default_supersampling" |> to_bool;
+    Out_channel.output_string stdout "reset all parameters\n"
+  (* let set_params = failwith "unimplemented" *)
+end
 
 (* these parameters are here mainly for doing animation easily *)
 let redraw render_mode alpha beta center : unit =
   match render_mode with
   | Planar ->
       let img =
-        getImage ~img_w:!current_img_w ~view_size:!current_view_size
-          ~plane_bd:!current_plane_bd
-          ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
-          ~grid_size:!current_grid_size Planar ~alpha ~beta ~center
+        getImage ~img_w:!Params.current_img_w
+          ~view_size:!Params.current_view_size
+          ~plane_bd:!Params.current_plane_bd
+          ~half_edge_length:!Params.current_half_edge_length
+          ~line_w:!Params.current_line_w ~grid_size:!Params.current_grid_size
+          ~sampling_n:(if !Params.current_supersampling then 4 else 1)
+          Planar ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !current_img_w in
+      let () = print_ascii_image img !Params.current_img_w in
       ()
   | Sphere ->
       let img =
-        getImage ~img_w:!current_img_w ~view_size:!current_view_size
-          ~plane_bd:!current_plane_bd
-          ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
-          ~grid_size:!current_grid_size Sphere ~alpha ~beta ~center
+        getImage ~img_w:!Params.current_img_w
+          ~view_size:!Params.current_view_size
+          ~plane_bd:!Params.current_plane_bd
+          ~half_edge_length:!Params.current_half_edge_length
+          ~line_w:!Params.current_line_w ~grid_size:!Params.current_grid_size
+          ~sampling_n:(if !Params.current_supersampling then 4 else 1)
+          Sphere ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !current_img_w in
+      let () = print_ascii_image img !Params.current_img_w in
       ()
   | Orthogonal ->
       let img =
-        getImage ~img_w:!current_img_w ~view_size:!current_view_size
-          ~plane_bd:!current_plane_bd
-          ~half_edge_length:!current_half_edge_length ~line_w:!current_line_w
-          ~grid_size:!current_grid_size Orthogonal ~alpha ~beta ~center
+        getImage ~img_w:!Params.current_img_w
+          ~view_size:!Params.current_view_size
+          ~plane_bd:!Params.current_plane_bd
+          ~half_edge_length:!Params.current_half_edge_length
+          ~line_w:!Params.current_line_w ~grid_size:!Params.current_grid_size
+          ~sampling_n:(if !Params.current_supersampling then 4 else 1)
+          Orthogonal ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !current_img_w in
+      let () = print_ascii_image img !Params.current_img_w in
       ()
-
-
 
 (* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
 let show_animation render_mode frame_rate keyframes_list =
@@ -92,7 +134,8 @@ let show_animation render_mode frame_rate keyframes_list =
   in
   List.iter keyframes_list ~f:redraw_and_sleep
 
-let cool_animation = get_cool_animation !current_frame_rate !current_duration
+let cool_animation =
+  get_cool_animation !Params.current_frame_rate !Params.current_duration
 
 (* parsing input commands *)
 let get_render_mode s =
@@ -109,27 +152,19 @@ let rec looping () =
   | None -> looping ()
   | Some "exit" -> ()
   | Some "reset" ->
-      current_alpha := Degree.of_float 0.0;
-      current_beta := Degree.of_float 0.0;
-      current_render_mode := Orthogonal;
-      current_center := Vec3.of_list [ 0.; 0.; 1. ];
-      current_img_w := 50;
-      current_view_size := 4;
-      current_plane_bd := 4;
-      current_half_edge_length := 2;
-      current_line_w := 0.25;
-      current_grid_size := 2;
-      current_frame_rate := 30;
-      current_duration := 1.5;
-      Out_channel.output_string stdout "reset all parameters\n";
-      redraw !current_render_mode !current_alpha !current_beta !current_center;
+      Params.load_default_param;
+      redraw
+        !Params.current_render_mode
+        !Params.current_alpha !Params.current_beta !Params.current_center;
       looping ()
   | Some "help" ->
       Out_channel.output_string stdout helper_page;
       looping ()
   | Some "cool" ->
       (* the frames in this animation is fixed. If the user wants to play it slower they need to decrease the framerate *)
-      show_animation !current_render_mode !current_frame_rate cool_animation;
+      show_animation
+        !Params.current_render_mode
+        !Params.current_frame_rate cool_animation;
       looping ()
   | Some s -> (
       Out_channel.flush stdout;
@@ -150,7 +185,9 @@ and parse_command_strings_in_loop (s : string) =
         ref_variable := i;
         Out_channel.output_string stdout
           (variable_name ^ " updated to " ^ paramvalue ^ "\n");
-        redraw !current_render_mode !current_alpha !current_beta !current_center;
+        redraw
+          !Params.current_render_mode
+          !Params.current_alpha !Params.current_beta !Params.current_center;
         looping ()
     | _ ->
         Out_channel.output_string stdout
@@ -165,18 +202,21 @@ and parse_command_strings_in_loop (s : string) =
           let new_alpha = Degree.of_float d in
           generate_keyframes
             {
-              alpha = !current_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              alpha = !Params.current_alpha;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
             {
               alpha = new_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
-            !current_frame_rate !current_duration linear_interpolate
-          |> show_animation !current_render_mode !current_frame_rate;
-          current_alpha := new_alpha;
+            !Params.current_frame_rate !Params.current_duration
+            linear_interpolate
+          |> show_animation
+               !Params.current_render_mode
+               !Params.current_frame_rate;
+          Params.current_alpha := new_alpha;
           looping ()
       | None ->
           Out_channel.output_string stdout
@@ -186,21 +226,26 @@ and parse_command_strings_in_loop (s : string) =
   | [ "add"; "alpha"; additional_alpha ] -> (
       match float_of_string_opt additional_alpha with
       | Some add_v ->
-          let new_alpha = Degree.( + ) !current_alpha (Degree.of_float add_v) in
+          let new_alpha =
+            Degree.( + ) !Params.current_alpha (Degree.of_float add_v)
+          in
           generate_keyframes
             {
-              alpha = !current_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              alpha = !Params.current_alpha;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
             {
               alpha = new_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
-            !current_frame_rate !current_duration linear_interpolate
-          |> show_animation !current_render_mode !current_frame_rate;
-          current_alpha := new_alpha;
+            !Params.current_frame_rate !Params.current_duration
+            linear_interpolate
+          |> show_animation
+               !Params.current_render_mode
+               !Params.current_frame_rate;
+          Params.current_alpha := new_alpha;
           looping ()
       | None ->
           Out_channel.output_string stdout
@@ -212,18 +257,21 @@ and parse_command_strings_in_loop (s : string) =
           let new_beta = Degree.of_float d in
           generate_keyframes
             {
-              alpha = !current_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              alpha = !Params.current_alpha;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
             {
-              alpha = !current_alpha;
+              alpha = !Params.current_alpha;
               beta = new_beta;
-              center = !current_center;
+              center = !Params.current_center;
             }
-            !current_frame_rate !current_duration linear_interpolate
-          |> show_animation !current_render_mode !current_frame_rate;
-          current_beta := new_beta;
+            !Params.current_frame_rate !Params.current_duration
+            linear_interpolate
+          |> show_animation
+               !Params.current_render_mode
+               !Params.current_frame_rate;
+          Params.current_beta := new_beta;
           looping ()
       | None ->
           Out_channel.output_string stdout
@@ -233,21 +281,26 @@ and parse_command_strings_in_loop (s : string) =
   | [ "add"; "beta"; additional_beta ] -> (
       match float_of_string_opt additional_beta with
       | Some add_v ->
-          let new_beta = Degree.( + ) !current_beta (Degree.of_float add_v) in
+          let new_beta =
+            Degree.( + ) !Params.current_beta (Degree.of_float add_v)
+          in
           generate_keyframes
             {
-              alpha = !current_alpha;
-              beta = !current_beta;
-              center = !current_center;
+              alpha = !Params.current_alpha;
+              beta = !Params.current_beta;
+              center = !Params.current_center;
             }
             {
-              alpha = !current_alpha;
+              alpha = !Params.current_alpha;
               beta = new_beta;
-              center = !current_center;
+              center = !Params.current_center;
             }
-            !current_frame_rate !current_duration linear_interpolate
-          |> show_animation !current_render_mode !current_frame_rate;
-          current_beta := new_beta;
+            !Params.current_frame_rate !Params.current_duration
+            linear_interpolate
+          |> show_animation
+               !Params.current_render_mode
+               !Params.current_frame_rate;
+          Params.current_beta := new_beta;
           looping ()
       | None ->
           Out_channel.output_string stdout
@@ -257,11 +310,12 @@ and parse_command_strings_in_loop (s : string) =
   | [ "view"; render_mode ] -> (
       match get_render_mode render_mode with
       | Some i ->
-          current_render_mode := i;
+          Params.current_render_mode := i;
           Out_channel.output_string stdout
             ("render mode updated to " ^ render_mode ^ "\n");
-          redraw !current_render_mode !current_alpha !current_beta
-            !current_center;
+          redraw
+            !Params.current_render_mode
+            !Params.current_alpha !Params.current_beta !Params.current_center;
           looping ()
       | None ->
           Out_channel.output_string stdout
@@ -281,18 +335,21 @@ and parse_command_strings_in_loop (s : string) =
             let new_center = Vec3.of_list [ x_float; y_float; z_float ] in
             generate_keyframes
               {
-                alpha = !current_alpha;
-                beta = !current_beta;
-                center = !current_center;
+                alpha = !Params.current_alpha;
+                beta = !Params.current_beta;
+                center = !Params.current_center;
               }
               {
-                alpha = !current_alpha;
-                beta = !current_beta;
+                alpha = !Params.current_alpha;
+                beta = !Params.current_beta;
                 center = new_center;
               }
-              !current_frame_rate !current_duration linear_interpolate
-            |> show_animation !current_render_mode !current_frame_rate;
-            current_center := new_center;
+              !Params.current_frame_rate !Params.current_duration
+              linear_interpolate
+            |> show_animation
+                 !Params.current_render_mode
+                 !Params.current_frame_rate;
+            Params.current_center := new_center;
             Out_channel.output_string stdout
               ("center set to " ^ x ^ " " ^ y ^ " " ^ z ^ "\n");
             looping ()
@@ -302,25 +359,28 @@ and parse_command_strings_in_loop (s : string) =
              they should be float float float\n";
           looping ())
   | [ "set"; "img_w"; paramvalue ] ->
-      set_command current_img_w "img_w" int_of_string_opt "int" paramvalue
+      set_command Params.current_img_w "img_w" int_of_string_opt "int"
+        paramvalue
   | [ "set"; "view_size"; paramvalue ] ->
-      set_command current_view_size "view_size" int_of_string_opt "int"
+      set_command Params.current_view_size "view_size" int_of_string_opt "int"
         paramvalue
   | [ "set"; "plane_bd"; paramvalue ] ->
-      set_command current_plane_bd "plane_bd" int_of_string_opt "int" paramvalue
+      set_command Params.current_plane_bd "plane_bd" int_of_string_opt "int"
+        paramvalue
   | [ "set"; "half_edge_length"; paramvalue ] ->
-      set_command current_half_edge_length "half_edge_length" int_of_string_opt
-        "int" paramvalue
+      set_command Params.current_half_edge_length "half_edge_length"
+        int_of_string_opt "int" paramvalue
   | [ "set"; "grid_size"; paramvalue ] ->
-      set_command current_grid_size "grid_size" int_of_string_opt "int"
+      set_command Params.current_grid_size "grid_size" int_of_string_opt "int"
         paramvalue
   | [ "set"; "line_w"; paramvalue ] ->
-      set_command current_line_w "line_w" float_of_string_opt "float" paramvalue
+      set_command Params.current_line_w "line_w" float_of_string_opt "float"
+        paramvalue
   | [ "set"; "frame_rate"; paramvalue ] ->
-      set_command current_frame_rate "frame_rate" int_of_string_opt "int"
+      set_command Params.current_frame_rate "frame_rate" int_of_string_opt "int"
         paramvalue
   | [ "set"; "duration"; paramvalue ] ->
-      set_command current_duration "duration" float_of_string_opt "float"
+      set_command Params.current_duration "duration" float_of_string_opt "float"
         paramvalue
   | _ ->
       Out_channel.output_string stdout
@@ -329,5 +389,7 @@ and parse_command_strings_in_loop (s : string) =
 
 (* the actual main method of the program where the program begins running *)
 let () =
-  redraw !current_render_mode !current_alpha !current_beta !current_center;
+  redraw
+    !Params.current_render_mode
+    !Params.current_alpha !Params.current_beta !Params.current_center;
   looping ()

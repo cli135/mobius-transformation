@@ -11,6 +11,8 @@ if the size is not changing and we are making mutations common *)
       val height : int *)
       type 'a t = 'a list list
       val make_list_grid : int -> int -> 'a t
+      val to_list : ...
+      val of_list : ...
    end *)
 
 (* This represents a single RGB value of floats,

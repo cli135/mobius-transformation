@@ -62,7 +62,8 @@
   math
   rasterizer
   ascii_printer
-  animation)
+  animation
+  yojson)
  (preprocess
   (pps bisect_ppx ppx_jane)))
 
