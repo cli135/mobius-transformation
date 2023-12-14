@@ -12,6 +12,7 @@
     rasterizer
     math
     ascii_printer
+    animation
     core
     ounit2
   ))

@@ -4,6 +4,7 @@ open Core
 open Math
 open Rasterizer
 open Ascii_printer
+open Animation
 
 let helper_page =
   "\n\
@@ -80,25 +81,7 @@ let redraw render_mode alpha beta center : unit =
       let () = print_ascii_image img !current_img_w in
       ()
 
-(* keyframe animation *)
-type keyframe_params = { alpha : Degree.t; beta : Degree.t; center : Vec3.t }
 
-let linear_interpolate (k1 : keyframe_params) (k2 : keyframe_params) (t : float)
-    : keyframe_params =
-  let alpha =
-    Degree.( - ) k2.alpha k1.alpha |> Degree.( * ) t |> Degree.( + ) k1.alpha
-  and beta =
-    Degree.( - ) k2.beta k1.beta |> Degree.( * ) t |> Degree.( + ) k1.beta
-  and center =
-    Vec3.( - ) k2.center k1.center |> Vec3.( * ) t |> Vec3.( + ) k1.center
-  in
-  { alpha; beta; center }
-
-let generate_keyframes k1 k2 frame_rate duration interpolation_method =
-  let total_frames = int_of_float (float_of_int frame_rate *. duration) in
-  List.range 0 (total_frames + 1)
-  |> List.map ~f:(fun t ->
-         interpolation_method k1 k2 (float_of_int t /. float_of_int total_frames))
 
 (* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
 let show_animation render_mode frame_rate keyframes_list =
@@ -109,100 +92,7 @@ let show_animation render_mode frame_rate keyframes_list =
   in
   List.iter keyframes_list ~f:redraw_and_sleep
 
-(* the following part is for the hardcoded animation *)
-
-(* this arc is a special one so I am just going to hard code it *)
-let keyframe_list_arc ?(r = 2.) frame_rate duration change_angle =
-  let total_frames = int_of_float (float_of_int frame_rate *. duration) in
-  let half_frames = total_frames / 2 in
-  let get_location i =
-    if i < half_frames then
-      let theta =
-        float_of_int i /. float_of_int half_frames /. 2. *. Float.pi
-      in
-      Vec3.of_list [ r *. Float.sin theta; r -. (r *. Float.cos theta); 1. ]
-    else
-      let theta =
-        float_of_int (i - half_frames)
-        /. float_of_int half_frames /. 2. *. Float.pi
-      in
-      Vec3.of_list [ r -. (r *. Float.sin theta); r *. Float.cos theta; 1. ]
-  in
-  let get_params i =
-    if change_angle then
-      {
-        alpha =
-          Degree.of_float
-          @@ (180. /. float_of_int total_frames *. float_of_int i);
-        beta =
-          Degree.of_float
-          @@ (360. /. float_of_int total_frames *. float_of_int i);
-        center = get_location i;
-      }
-    else
-      {
-        alpha = Degree.of_float 0.;
-        beta = Degree.of_float 0.;
-        center = get_location i;
-      }
-  in
-  List.map ~f:get_params (List.range 0 (total_frames + 1))
-
-(* hard coded animation to play *)
-let cool_animation =
-  List.concat
-    [
-      keyframe_list_arc !current_frame_rate !current_duration false;
-      generate_keyframes
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 1. ];
-        }
-        {
-          alpha = Degree.of_float 180.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 1. ];
-        }
-        !current_frame_rate (!current_duration *. 0.8) linear_interpolate;
-      generate_keyframes
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 1. ];
-        }
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 4. ];
-        }
-        !current_frame_rate (!current_duration *. 0.4) linear_interpolate;
-      generate_keyframes
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 4. ];
-        }
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 1.5 ];
-        }
-        !current_frame_rate (!current_duration *. 0.4) linear_interpolate;
-      generate_keyframes
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 0.;
-          center = Vec3.of_list [ 0.; 0.; 1.5 ];
-        }
-        {
-          alpha = Degree.of_float 0.;
-          beta = Degree.of_float 360.;
-          center = Vec3.of_list [ 0.; 0.; 1.5 ];
-        }
-        !current_frame_rate !current_duration linear_interpolate;
-      keyframe_list_arc !current_frame_rate (!current_duration *. 2.) true;
-    ]
+let cool_animation = get_cool_animation !current_frame_rate !current_duration
 
 (* parsing input commands *)
 let get_render_mode s =

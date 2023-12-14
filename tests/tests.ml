@@ -10,6 +10,7 @@ open Core
 open OUnit2
 open Math
 open Rasterizer
+open Animation
 (* open Ascii_printer *)
 
 let v2a = Vec2.of_list [ 1.; 2. ]
@@ -18,7 +19,7 @@ let v2c = Vec2.of_list [ 233.; -0.7 ]
 let v3a = Vec3.of_list [ 1.; 2.; 2.0 ]
 let v3b = Vec3.of_list [ -1.; 0.5; 0.2 ]
 let v3c = Vec3.of_list [ -0.23; 1.34; 43. ]
-let float_equal f1 f2 = Float.compare (Float.abs (f1 -. f2)) 0.00000001 = -1
+let float_equal f1 f2 = Float.( (Float.abs (f1 -. f2)) < 0.00000001)
 let float_list_equal lf1 lf2 = List.for_all2_exn lf1 lf2 ~f:float_equal
 
 let vec_tests_ _ =
@@ -44,11 +45,12 @@ let vec_tests_ _ =
 let degree_tests_ _ =
   assert_equal 1.5 @@ (Degree.of_float 1.5 |> Degree.to_float);
   assert_equal true
-  @@ float_equal (Degree.of_float 10.
-     |> Degree.( + ) (Degree.of_float 6.)
-     |> Fn.flip Degree.( - ) (Degree.of_float 1.)
-     |> Degree.( * ) 0.1
-     |> Degree.to_float) 1.5
+  @@ float_equal
+       (Degree.of_float 10.
+       |> Degree.( + ) (Degree.of_float 6.)
+       |> Fn.flip Degree.( - ) (Degree.of_float 1.)
+       |> Degree.( * ) 0.1 |> Degree.to_float)
+       1.5
 
 let nonvec_tests_ _ =
   assert_equal true
@@ -73,7 +75,11 @@ let nonvec_tests_ _ =
 
 let math_tests =
   "Math tests"
-  >: test_list [ "vec_tests" >:: vec_tests_; "degree_tests" >:: degree_tests_ ;"nonvec_tests" >:: nonvec_tests_]
+  >: test_list
+       [
+         "vec_tests" >:: vec_tests_; "degree_tests" >:: degree_tests_;
+         "nonvec_tests" >:: nonvec_tests_;
+       ]
 
 let random2Dpoints =
   [
@@ -227,8 +233,41 @@ let print_ascii_tests =
   "Printing ascii tests"
   >: test_list [ "basic print ascii test" >:: basic_print_ascii_tests ]
 
+let k1 =
+  {
+    alpha = Degree.of_float 180.;
+    beta = Degree.of_float 0.;
+    center = Vec3.of_list [ 0.; 0.; 1. ];
+  }
+
+let k2 =
+  {
+    alpha = Degree.of_float 0.;
+    beta = Degree.of_float 90.;
+    center = Vec3.of_list [ 0.; 0.; 0. ];
+  }
+
+let k3 =
+  {
+    alpha = Degree.of_float 90.;
+    beta = Degree.of_float 45.;
+    center = Vec3.of_list [ 0.; 0.; 0.5 ];
+  }
+
+let basic_animation_tests _ =
+  assert_equal k1 @@ linear_interpolate k1 k2 0.;
+  assert_equal k2 @@ linear_interpolate k1 k2 1.;
+  (* This is dangerous and might be good to use floating point comparison but seems working fine*)
+  assert_equal k3 @@ linear_interpolate k1 k2 0.5;
+  assert_equal [k1;k3;k2] @@ generate_keyframes k1 k2 2 1. linear_interpolate
+
+
+let animation_tests =
+  "animation tests" >::: [ "animation test" >:: basic_animation_tests ]
+
 let series =
-  "Project Tests" >::: [ math_tests; rasterizer_tests; print_ascii_tests ]
+  "Project Tests"
+  >::: [ math_tests; rasterizer_tests; print_ascii_tests; animation_tests ]
 
 let () = run_test_tt_main series
 

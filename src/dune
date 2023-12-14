@@ -7,49 +7,32 @@
 ; Date: 11-09-2023 (November 9, 2023)
 
 (library
-  (name rasterizer)
-  (modules rasterizer)
-  (libraries
-    math
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-  )
-  (preprocess
-    (pps bisect_ppx ppx_jane)
-  )
-)
+ (name rasterizer)
+ (modules rasterizer)
+ (libraries math core stdio core_unix core_unix.sys_unix)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
 
 (library
-  (name math)
-  (modules math)
-  (libraries
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-  )
-  (preprocess
-    (pps bisect_ppx ppx_jane)
-  )
-)
+ (name math)
+ (modules math)
+ (libraries core stdio core_unix core_unix.sys_unix)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
 
 (library
-  (name ascii_printer)
-  (modules ascii_printer)
-  (libraries
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-    imagelib
-    imagelib.unix
-  )
-  (preprocess
-    (pps bisect_ppx ppx_jane)
-  )
-)
+ (name ascii_printer)
+ (modules ascii_printer)
+ (libraries core stdio core_unix core_unix.sys_unix imagelib imagelib.unix)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
+
+(library
+ (name animation)
+ (modules animation)
+ (libraries core stdio math)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
 
 ; (library
 ;   (name print_ascii)
@@ -68,42 +51,37 @@
 ; )
 
 (executable
-  (name user_interface)
-  (modules user_interface)
-  (libraries
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-    core_unix.command_unix
-    math
-    rasterizer
-    ascii_printer
-  )
-  (preprocess
-    (pps bisect_ppx ppx_jane)
-  )
-)
+ (name user_interface)
+ (modules user_interface)
+ (libraries
+  core
+  stdio
+  core_unix
+  core_unix.sys_unix
+  core_unix.command_unix
+  math
+  rasterizer
+  ascii_printer
+  animation)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
 
 (executable
-  (name print_ascii)
-  (modules print_ascii)
-  (libraries
-    core
-    stdio
-    core_unix
-    core_unix.sys_unix
-    core_unix.command_unix
-    math
-    rasterizer
-    ascii_printer
-    imagelib
-    imagelib.unix
-  )
-  (preprocess
-    (pps bisect_ppx ppx_jane)
-  )
-)
+ (name print_ascii)
+ (modules print_ascii)
+ (libraries
+  core
+  stdio
+  core_unix
+  core_unix.sys_unix
+  core_unix.command_unix
+  math
+  rasterizer
+  ascii_printer
+  imagelib
+  imagelib.unix)
+ (preprocess
+  (pps bisect_ppx ppx_jane)))
 
 ; (executable
 ;   (name moebius)

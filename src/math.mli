@@ -42,7 +42,6 @@ module Degree : sig
   val to_radian : t -> float
 end
 
-val gt : float -> float -> bool
 val cross : Vec3.t -> Vec3.t -> Vec3.t
 val vec3ofvec2 : Vec3.t -> Vec2.t
 

@@ -84,7 +84,6 @@ end
 
 
 (* let rad x = x *. Float.pi /. 180. degree to radian *)
-let gt x y = Float.compare x y = 1 (* float greater than *)
 
 let cross v1 v2 =
   Vec3.of_list
@@ -128,9 +127,9 @@ let map2localS2 center v2 =
   let x_c = Vec3.nth center 0
   and y_c = Vec3.nth center 1
   and z_c = Vec3.nth center 2 in
-  let v2_centered = Vec2.( - ) v2 (Vec2.of_list [ x_c; y_c ]) in
+  let v2_centered = Vec2.( v2 - (Vec2.of_list [ x_c; y_c ])) in
   let v3global = invSProj v2_centered ~z_c in
-  Vec3.( - ) v3global (Vec3.of_list [ 0.; 0.; z_c ])
+  Vec3.(v3global - (Vec3.of_list [ 0.; 0.; z_c ]))
 
 (* step 2. rotate and translate back, S2 at origin -> S2 at (0,0,1) *)
 (* rotation along z-axis for -alpha angle *)
