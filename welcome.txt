@@ -1,3 +1,0 @@
-Welcome to the Moebius Transformation in ASCII Art program!
-
-Type 'help' to see a list of options, or 'cool' to see an animation:
