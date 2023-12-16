@@ -9,7 +9,7 @@ module Gray_image :
 
 (* This is the main function is that is made available to be called
    so that images represented in the float list format can be printed to the terminal *)
-val print_ascii_image : Gray_image.t -> int -> unit
+val print_ascii_image : Gray_image.t -> int -> png:bool -> unit
 
 (* This generates a PNG image from a Gray_image (internal representation to PNG) *)
 val create_png_image : Gray_image.t -> int -> string -> unit

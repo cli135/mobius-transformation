@@ -108,7 +108,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Planar ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !Params.current_img_w in
+      let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
   | Sphere ->
       let img =
@@ -120,7 +120,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Sphere ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !Params.current_img_w in
+      let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
   | Orthogonal ->
       let img =
@@ -132,7 +132,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Orthogonal ~alpha ~beta ~center
       in
-      let () = print_ascii_image img !Params.current_img_w in
+      let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
 
 (* this seems to sleep more than needed, is that a problem in IO or system call? although it's not a big deal so look at it later *)
