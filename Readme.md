@@ -10,16 +10,24 @@ Authors:
 
 ## Overview:
 
+Here's a visualization of the screen you will see upon loading the program:
+
+![Moebius Transformation Main Menu Screenshot](images/ascii-main-menu.png)
+
 - The purpose of this project is to create an animation of the Moebius transformation via a rasterizer.
   - Users are be able to interact with the animation by setting parameters, and the animation is displayed via ASCII art.
   - The goal is to provide an intuitive and interactive visualization of the Moebius transformation and how it is related to the stereographic projection in the command line terminal via ASCII art.
 
-## How to run the program / Usage:
+Here are some additional images (an ASCII screenshot and a PNG screenshot):
 
-- `dune b`
-- `dune test`
-- `./_build/default/src/user_interface.exe`
-  - This command runs the program.
+![Additional Images](images/additional-images.png)
+
+## **How to run the program / Usage:**
+
+- **`dune b`**
+- **`dune test`**
+- **`./_build/default/src/user_interface.exe`**
+  - This last command runs the program.
   - You will then see an image displayed, with the option to enter commands interactively. Below is a list of commands that are accepted syntax.
 
 ```
@@ -52,6 +60,16 @@ reset: reset all parameters
 exit: exit the program
 
 ```
+
+------------------
+
+To run the `print_ascii.exe` program, which is an image-converter between the rasterizer, general PNG images, and general ASCII images, you can run the following commands:
+
+- **`dune b`**
+- **`dune test`**
+- **`./_build/default/src/print_ascii.exe`**
+  - This last command runs the program.
+  - You can then enter the name of a filepath/filename, such as `images/von-neumann.png`, and the PNG will be translated into ASCII.
 
 ## Update notes:
 
