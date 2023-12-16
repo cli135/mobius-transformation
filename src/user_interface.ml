@@ -374,6 +374,7 @@ and parse_command_strings_in_loop (s : string) =
 
 (* the actual main method of the program where the program begins running *)
 let () =
+  Params.load_default_param ();
   redraw
     !Params.current_render_mode
     !Params.current_alpha !Params.current_beta !Params.current_center;
