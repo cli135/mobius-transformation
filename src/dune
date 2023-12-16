@@ -52,6 +52,7 @@
 
 (executable
  (name user_interface)
+ (public_name user_interface)
  (modules user_interface)
  (libraries
   core
