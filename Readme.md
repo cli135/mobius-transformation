@@ -116,9 +116,9 @@ To run the `print_ascii.exe` program, which is an image-converter between the ra
 
 This `Readme.md` document is the Readme document for the Final Project Deliverable.
 
-Our Project Proposal PDF is in the file named '`Project Design Proposal.pdf`' or a similar name, in the root directory.
-
-Our Code Checkpoint README PDF is in the file named '`Code Checkpoint README - Moebius Transformation in ASCII Art.pdf`' or a similar name, in the root directory.
+In the `documents/` directory you can find:
+- Our Project Proposal PDF is in the file named '`Project Design Proposal.pdf`' or a similar name.
+- Our Code Checkpoint README PDF is in the file named '`Code Checkpoint README - Moebius Transformation in ASCII Art.pdf`' or a similar name.
 
 ## Dependencies/Libraries used:
 
