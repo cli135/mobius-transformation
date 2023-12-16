@@ -18,6 +18,12 @@ Here's a visualization of the screen you will see upon loading the program:
   - Users are be able to interact with the animation by setting parameters, and the animation is displayed via ASCII art.
   - The goal is to provide an intuitive and interactive visualization of the Moebius transformation and how it is related to the stereographic projection in the command line terminal via ASCII art.
 
+Here is some background information on the Moebius transformation:
+
+![Background info](images/background-slide.png)
+
+![Injective transformation](images/injective.png)
+
 Here are some additional images (an ASCII screenshot and a PNG screenshot):
 
 ![Additional Images](images/additional-images.png)
