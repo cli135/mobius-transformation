@@ -377,4 +377,6 @@ let () =
   redraw
     !Params.current_render_mode
     !Params.current_alpha !Params.current_beta !Params.current_center;
+  Out_channel.output_string stdout
+    "\nWelcome to the Moebius Transformation in ASCII Art program!\nType 'help' to see a list of options, or 'cool' to see an animation:\n\n";  
   looping ()
