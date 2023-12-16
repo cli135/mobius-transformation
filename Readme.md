@@ -1,7 +1,7 @@
 Final Project - FPSE - Moebius Transformation in ASCII Art
 --------------------------------
 
-![Cool animation of the program](images/cool.gif)
+<p align=center>![Cool animation of the program](images/cool.gif)</p>
 
 ![Moebius Transformation Image Screenshot](images/moebius-presentation-screenshot.png)
 
