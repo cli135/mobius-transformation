@@ -40,15 +40,19 @@ let () =
   ()
 
 let rec looping () =
-  Out_channel.output_string stdout "Enter a filename: \n";
+  Out_channel.output_string stdout "Welcome to the print_ascii.exe program!\n";
+  Out_channel.output_string stdout "PNGs are automatically generated in the root directory. \n";
+  Out_channel.output_string stdout "To convert a PNG to ASCII, enter a filename: \n";
   Out_channel.flush stdout;
   match In_channel.(input_line stdin) with
   | None -> looping ()
   | Some "exit" -> ()
   | Some input_filename ->
-    let all_files_in_cwd = Sys_unix.ls_dir "." in
-    match List.find all_files_in_cwd ~f:(fun x -> String.(x = input_filename)) with
-    | Some _ -> 
+    (* let all_files_in_cwd = Sys_unix.ls_dir "." in *)
+    (* match List.find all_files_in_cwd ~f:(fun x -> String.(x = input_filename)) with *)
+    begin
+    match Sys_unix.file_exists input_filename with
+    | `Yes -> 
       let image = ImageLib_unix.openfile input_filename in
       let image_width = image.width in
       let image_height = image.height in
@@ -62,9 +66,10 @@ let rec looping () =
       let () = print_ascii_image (Gray_image.of_float_list float_list image_width) image_width
       in 
       looping ()
-    | None ->
+    | _ ->
       Out_channel.output_string stdout
       ("Could not find file with filename " ^ input_filename ^ ", please try again\n");
       looping ()
+    end
 
 let () = looping ()

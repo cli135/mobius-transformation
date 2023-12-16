@@ -1,10 +1,9 @@
 open Core
 
-module Gray_image = struct
-      (* let width =  
-      let height =  *)
+(* This is grid data structure (like a 2D array)
+   except instead of being made of arrays, it is made of lists *)
+   module Gray_image = struct
       type t = float list list
-      (* let make_list_grid (width : int) (height : int) : t = failwith "unimplemented" *)
       let to_float_list (grid : t) : float list = List.concat grid
       let of_float_list (float_list : float list) (width : int) : t =
         if (List.length float_list) mod width <> 0 then
