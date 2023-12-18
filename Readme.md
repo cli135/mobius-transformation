@@ -35,6 +35,7 @@ Here are some additional images (an ASCII screenshot and a PNG screenshot):
 
 ## **How to run the program / Usage:**
 
+- **`opam install . --deps-only --working-dir`** to install dependencies if not already installed
 - **`dune b`**
 - **`./_build/default/src/user_interface.exe`**
   - This last command runs the program.
@@ -74,7 +75,6 @@ exit: exit the program
 ------------------
 
 To run the `print_ascii.exe` program, which is an image-converter between the rasterizer, general PNG images, and general ASCII images, you can run the following commands:
-
 - **`dune b`**
 - **`./_build/default/src/print_ascii.exe`**
   - This last command runs the program.
