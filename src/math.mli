@@ -43,7 +43,7 @@ module Degree : sig
 end
 
 val cross : Vec3.t -> Vec3.t -> Vec3.t
-val vec3ofvec2 : Vec3.t -> Vec2.t
+val vec3tovec2 : Vec3.t -> Vec2.t
 
 (* geometric maps *)
 

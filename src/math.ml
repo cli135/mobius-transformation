@@ -93,7 +93,7 @@ let cross v1 v2 =
       (Vec3.nth v1 0 *. Vec3.nth v2 1) -. (Vec3.nth v1 1 *. Vec3.nth v2 0);
     ]
 
-let vec3ofvec2 v3 = Vec2.of_list [ Vec3.nth v3 0; Vec3.nth v3 1 ]
+let vec3tovec2 v3 = Vec2.of_list [ Vec3.nth v3 0; Vec3.nth v3 1 ]
 
 (* compute the projection between x^2+y^2+(z-z_c)^2=1 sphere to the z=0 plane, requires z_c > 0
    input and output are all global coordinates

@@ -17,8 +17,8 @@ module Exposed_for_testing = struct
     in
     if
       (* if outside target area *)
-      Float.(Float.abs x > half_edge_length_ +. (width *. 0.5))
-      || Float.(Float.abs y > half_edge_length_ +. (width *. 0.5))
+      Float.(abs x > half_edge_length_ +. (width *. 0.5))
+      || Float.(abs y > half_edge_length_ +. (width *. 0.5))
     then 0
     else
       let xm, ym =
@@ -27,8 +27,8 @@ module Exposed_for_testing = struct
       and width_scaled = width *. 0.5 *. grid_size_ /. half_edge_length_ in
       if
         (* if on grid lines *)
-        Float.(width_scaled > Float.abs @@ (Float.round xm -. xm))
-        || Float.(width_scaled > Float.abs @@ (Float.round ym -. ym))
+        Float.(width_scaled > abs @@ (round xm -. xm))
+        || Float.(width_scaled > abs @@ (round ym -. ym))
       then 1
       else 0
 
@@ -97,7 +97,7 @@ module Exposed_for_testing = struct
   (* intersection of a ray and the z=0 plane *)
   let planeIntersection p_start forward_dir =
     let t = -.Vec3.nth p_start 2 /. Vec3.nth forward_dir 2 in
-    Vec3.((t * forward_dir) + p_start) |> vec3ofvec2
+    Vec3.((t * forward_dir) + p_start) |> vec3tovec2
 
   (* Given pixel coordinate, return the orthogonal projection view*)
   let sample_orthogonal ~i ~j ~grid_size ~camera_offset ~directions ~alpha ~beta
@@ -120,8 +120,8 @@ module Exposed_for_testing = struct
         let p_on_plane = planeIntersection p_start forward_dir in
         if
           (* check the plane boundary because we don't want the plane to fill up the whole image*)
-          Float.(float_of_int plane_bd < Float.abs (Vec2.nth p_on_plane 0))
-          || Float.(float_of_int plane_bd < Float.abs (Vec2.nth p_on_plane 1))
+          Float.(float_of_int plane_bd < abs (Vec2.nth p_on_plane 0))
+          || Float.(float_of_int plane_bd < abs (Vec2.nth p_on_plane 1))
         then 0.
         else
           let c =
