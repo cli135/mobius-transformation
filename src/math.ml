@@ -44,6 +44,7 @@ end) : Vec = struct
   let dot (v1 : t) (v2 : t) : float =
     Array.fold2_exn v1 v2 ~init:0. ~f:(fun acc x y -> acc +. (x *. y))
 
+[@@@ coverage off]
   let print (v1 : t) =
     print_string "[";
     Array.map v1 ~f:(fun x ->

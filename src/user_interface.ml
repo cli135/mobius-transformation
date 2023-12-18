@@ -16,16 +16,6 @@ let get_render_mode s =
   | "sphere" -> Some Sphere
   | _ -> None
 
-(* struct params{
-     frames:...
-
-     val load_default_param
-     val set_params:
-   }
-
-   end *)
-
-
 module Params = struct
   (* mutable state references for parameters the user can change *)
   (* initialize mutable references with defaults, will change later based on what is

@@ -84,6 +84,15 @@ To run the `print_ascii.exe` program, which is an image-converter between the ra
   - This last command runs the program.
   - You can then enter the name of a filepath/filename, such as `images/von-neumann.png`, and the PNG will be translated into ASCII.
 
+## Test Coverage
+
+- `math.ml` and `rasterizer.ml`: 92%
+- `animation.ml` core logic is covered,
+  - test for hardcoded animation is irrelevant for testing since it is a visual test
+- `ascii_printer.ml`: __%
+- `user_interface.ml`: This is I/O so it is not tested for coverage.
+
+
 ## Update notes:
 
 - Hongyi
