@@ -108,6 +108,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Planar ~alpha ~beta ~center
       in
+      let _ = Sys_unix.command "clear" in
       let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
   | Sphere ->
@@ -120,6 +121,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Sphere ~alpha ~beta ~center
       in
+      let _ = Sys_unix.command "clear" in
       let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
   | Orthogonal ->
@@ -132,6 +134,7 @@ let redraw render_mode alpha beta center : unit =
           ~sampling_n:(if !Params.current_supersampling then 4 else 1)
           Orthogonal ~alpha ~beta ~center
       in
+      let _ = Sys_unix.command "clear" in
       let () = print_ascii_image img !Params.current_img_w ~png:false in
       ()
 

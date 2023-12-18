@@ -3,7 +3,7 @@
 "default_beta" : 0.0,
 "default_render_mode" : "Orthogonal",
 "default_center" : [ 0.0, 0.0, 1.0 ],
-"default_img_w" : 100,
+"default_img_w" : 50,
 "default_view_size" : 4,
 "default_plane_bd" : 4,
 "default_half_edge_length" : 2,

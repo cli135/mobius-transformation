@@ -72,6 +72,10 @@ exit: exit the program
 
 ```
 
+Note:
+- Please use the VSCode terminal on a low `img_w` (i.e. `set img_w 50`) to avoid flickering issues when running the animations on a laptop or similar device. Computers with more resources can run on larger `img_w` because they can redraw the ASCII characters fast enough to avoid any flickering and delay, but on computers with less resources the program works best with small `img_w` and lower `frame_rate` options.
+- We configured our program and visualization based on the output of the VSCode terminal, so our group believes the VSCode terminal will provide the best results when running our program. While other terminals may work, we cannot assure their visualization effectiveness.
+
 ------------------
 
 To run the `print_ascii.exe` program, which is an image-converter between the rasterizer, general PNG images, and general ASCII images, you can run the following commands:
