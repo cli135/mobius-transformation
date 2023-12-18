@@ -4,7 +4,7 @@
 ; Professor Smith
 ; Group Advisor: Brandon Stride
 ; Group: Hongyi Liu, Christopher Li
-; Date: 11-09-2023 (November 9, 2023)
+; Date: 12-18-2023 (December 18, 2023)
 
 (library
  (name ascii_printer)
@@ -33,22 +33,6 @@
  (libraries core stdio math)
  (preprocess
   (pps bisect_ppx ppx_jane)))
-
-; (library
-;   (name print_ascii)
-;   (modules print_ascii)
-;   (libraries
-;     core
-;     stdio
-;     core_unix
-;     core_unix.sys_unix
-;     imagelib
-;     imagelib.unix
-;   )
-;   (preprocess
-;     (pps bisect_ppx ppx_jane)
-;   )
-; )
 
 (executable
  (name user_interface)
@@ -84,20 +68,3 @@
   imagelib.unix)
  (preprocess
   (pps bisect_ppx ppx_jane)))
-
-; (executable
-;   (name moebius)
-;   (modules moebius)
-;   (libraries
-;     rasterizer
-;     math
-;     ascii_printer
-;     user_interface
-;     core
-;     stdio
-;     core_unix
-;     core_unix.sys_unix
-;     core_unix.command_unix)
-;   (preprocess (pps bisect_ppx ppx_jane)
-;   )
-; )

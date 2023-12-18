@@ -67,5 +67,3 @@ let create_png_image (gray_image : Gray_image.t) (image_width : int) (output_fil
   ) image
   in
   ImageLib_unix.writefile output_filename png_img 
-  
-(* function to load any png image into ascii art, like sampling that image *)

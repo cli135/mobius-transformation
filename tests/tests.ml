@@ -1,10 +1,6 @@
 (*
-  We will put the tests for functions here
+  Tests for functions here
 *)
-
-(* Will comment back in soon *)
-(* open Core;;
-   open OUnit2;; *)
 
 open Core
 open OUnit2
@@ -218,7 +214,11 @@ let basic_print_ascii_tests _ =
   let image_width = 2 in
   let img = Gray_image.of_float_list [1.; 0.; 1.; 0.] image_width in
   let ascii_list = get_ascii_image img ~png:false in
-  assert_equal ascii_list ["@"; " "; "@"; " "]
+  assert_equal ascii_list ["@"; " "; "@"; " "];
+  let image_width = 2 in
+  let img = Gray_image.of_float_list [0.; 0.; 2.; 0.] image_width in
+  let ascii_list = get_ascii_image img ~png:false in
+  assert_equal ascii_list [" "; " "; "@"; " "]
 
 let print_ascii_tests =
   "Printing ascii tests"

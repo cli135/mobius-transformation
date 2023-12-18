@@ -3,9 +3,9 @@ open Rasterizer
 open Math
 open Ascii_printer
 
-
 (* main method *)
 let () =
+  (* output png images to the images/ directory *)
   let image_width = 80 in
   let img =
     getImage ~img_w:image_width ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
@@ -43,8 +43,7 @@ let rec looping () =
   | None -> looping ()
   | Some "exit" -> ()
   | Some input_filename ->
-    (* let all_files_in_cwd = Sys_unix.ls_dir "." in *)
-    (* match List.find all_files_in_cwd ~f:(fun x -> String.(x = input_filename)) with *)
+    (* load any png image into ascii art, like sampling that image *)
     begin
     match Sys_unix.file_exists input_filename with
     | `Yes -> 
