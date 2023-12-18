@@ -210,28 +210,15 @@ let rasterizer_tests =
        [ "basic rasterizer test" >:: basic_tests; "image test" >:: image_tests ]
 
 (* open Ascii_printer *)
-let basic_print_ascii_tests _ =
-  (*
-  let image_width = 100 in
-  let img =
-    getImage ~img_w:image_width ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Planar ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
-        ~center:(Vec3.of_list [ 0.; 0.; 1. ]) in
-  let () = print_ascii_image img image_width ~png:false in
-  assert_equal true true;
-  let img =
-    getImage ~img_w:image_width ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Sphere ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
-        ~center:(Vec3.of_list [ 0.; 0.; 1. ]) in
-  let () = print_ascii_image img image_width ~png:false in
-  assert_equal true true;
-  let img =
-    getImage ~img_w:image_width ~view_size:4 ~plane_bd:4 ~half_edge_length:2 ~line_w:0.25
-        ~grid_size:2 Orthogonal ~alpha:(Degree.of_float 20.) ~beta:(Degree.of_float 25.)
-        ~center:(Vec3.of_list [ 0.; 0.; 1. ]) in
-  let () = print_ascii_image img image_width ~png:false in
-  assert_equal true true; *)
-  assert_equal true true
+let basic_print_ascii_tests _ =  
+  let image_width = 2 in
+  let img = Gray_image.of_float_list [1.; 1.; 0.; 0.] image_width in
+  let ascii_list = get_ascii_image img ~png:false in
+  assert_equal ascii_list ["@"; "@"; " "; " "];
+  let image_width = 2 in
+  let img = Gray_image.of_float_list [1.; 0.; 1.; 0.] image_width in
+  let ascii_list = get_ascii_image img ~png:false in
+  assert_equal ascii_list ["@"; " "; "@"; " "]
 
 let print_ascii_tests =
   "Printing ascii tests"

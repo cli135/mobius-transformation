@@ -17,10 +17,9 @@ let get_pixel_density_map (png: bool) : string =
     " `.-':_,^=;><+!rc*/z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Bg0MNWQ%&@"
   else "                                                                                             ````````````````````````````````````````````````````````````````````````````````````````...................................................................................------------------------------------------------------------------------------'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::_______________________________________________________________,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,,^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^================================================;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>><<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<++++++++++++++++++++++++++++!!!!!!!!!!!!!!!!!!!!!!!rrrrrrrrrrrrrrrrrrccccccccccccc********///z?sLTv)J7(|Fi{C}fI31tlu[neoZ5Yxjya]2ESwqkP6h9d4VpOGbUAKXHm8RD#$Bg0MNWQ%&@"
 
-let print_ascii_image (gray_image : Gray_image.t) (image_width : int) ~(png : bool): unit =
+let get_ascii_image (gray_image : Gray_image.t) ~(png : bool): string list =
   let image = Gray_image.to_float_list gray_image in
   (* input is a grayscale list *)
-  let image_width = image_width in
   (* change density here if needed *)
   let pixel_ascii_map = get_pixel_density_map png in
   let max_val : float = List.fold ~f:(fun acc elt -> if Float.(elt > acc) then elt else acc)
@@ -28,21 +27,37 @@ let print_ascii_image (gray_image : Gray_image.t) (image_width : int) ~(png : bo
                           image
   in
   (* the below is rendering the images *)
-  (List.iteri
+  (List.map
     image
-    ~f:(fun idx elt ->
-      let image_width = image_width in
-      let j = idx mod image_width in
+    ~f:(fun elt ->
       let value = elt in
       let ascii_val_idx = (int_of_float (Float.( * ) (Float.(/) (value) (max_val)) (float_of_int ((String.length pixel_ascii_map) - 1)))) in
       let ascii_val = String.get pixel_ascii_map ascii_val_idx in
       (* width multiplier is 2 *)
-      print_string (String.make 1 ascii_val);
-      print_string (String.make 1 ascii_val);
-      if j = image_width - 1 then print_endline "" else print_string ""
+      (* print_string (String.make 1 ascii_val); *)
+      (* print_string (String.make 1 ascii_val); *)
+      (* if j = image_width - 1 then print_endline "" else print_string "" *)
+      String.make 1 ascii_val
     ))
 
+(* this function is I/O to the terminal (i.e. printed characters),
+   so tests are visual and bisect coverage test is off *)
+[@@@ coverage off]
+let print_ascii_image (gray_image : Gray_image.t) (image_width : int) ~(png : bool): unit =
+  let ascii_list = get_ascii_image gray_image ~png in
+  (* input is a grayscale list *)
+  (List.iteri
+    ascii_list
+    ~f:(fun idx ascii_val ->
+      let j = idx mod image_width in
+      (* width multiplier is 2 *)
+      print_string (ascii_val);
+      print_string (ascii_val);
+      if j = image_width - 1 then print_endline "" else print_string ""
+    ))    
+
 (* function to create a png image from the grayscale array given from rasterizer *)
+(* this function is I/O to PNG image, so tests are visual and bisect coverage test is off *)
 let create_png_image (gray_image : Gray_image.t) (image_width : int) (output_filename : string): unit =
   let image = Gray_image.to_float_list gray_image in 
   let png_img = Image.create_rgb image_width image_width in

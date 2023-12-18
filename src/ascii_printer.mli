@@ -7,6 +7,9 @@ module Gray_image :
       val of_float_list : float list -> int -> t
    end
 
+(* This is a helper function for the print_ascii_image function below *)
+val get_ascii_image : Gray_image.t -> png:bool -> string list
+
 (* This is the main function is that is made available to be called
    so that images represented in the float list format can be printed to the terminal *)
 val print_ascii_image : Gray_image.t -> int -> png:bool -> unit
